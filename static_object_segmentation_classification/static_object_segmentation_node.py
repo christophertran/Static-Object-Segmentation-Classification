@@ -1,5 +1,5 @@
 def main():
-    print('Hi from Static-Object-Segmentation-Classification.')
+    print('Hi from static_object_segmentation_classification.')
 
 
 if __name__ == '__main__':
