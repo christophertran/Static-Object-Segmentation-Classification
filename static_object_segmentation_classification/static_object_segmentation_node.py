@@ -4,27 +4,137 @@ import os
 import rclpy
 from rclpy.node import Node
 import sensor_msgs.msg as sensor_msgs
+import std_msgs.msg as std_msgs
 
 import numpy as np
+import open3d as o3d
+import matplotlib.pyplot as plt
+
+
+# TOPIC = "lidar_left/velodyne_points"
+# TOPIC = "lidar_right/velodyne_points"
+TOPIC = "cepton/points"
 
 
 class SegmentationNode(Node):
     def __init__(self):
         super().__init__("static_object_segmentation_node")
 
+        # This is for visualization of the received point cloud.
+        self.vis = o3d.visualization.Visualizer()
+        self.vis.create_window()
+
+        self.opt = self.vis.get_render_option()
+        self.opt.background_color = np.array([0, 0, 0])
+
+        self.view_control = self.vis.get_view_control()
+        self.view_control.set_front(
+            [-0.06833489914812628, -0.99570132429742775, 0.062523710308682964]
+        )
+        self.view_control.set_lookat(
+            [10.443239212036133, 100.25655364990234, 9.2428566217422485]
+        )
+        self.view_control.set_up(
+            [0.0055994441793673433, 0.062286438595372084, 0.9980426072027121]
+        )
+        self.view_control.set_zoom(0.69999999999999996)
+
+        self.pcd_as_numpy_array = np.asarray([])
+        self.o3d_pcd = o3d.geometry.PointCloud()
+
         # Set up a subscription to the '/cepton/points' topic with a
         # callback to the function 'listener_callback'
         self.pcd_subscriber = self.create_subscription(
             sensor_msgs.PointCloud2,  # Msg type
-            "cepton/points",  # topic
+            TOPIC,  # topic
             self.listener_callback,  # Function to call
             10,  # QoS
         )
 
+        # Set up a publisher to the 'static_object_segmentation_node/points' topic
+        # with a callback to the function 'timer_callback'
+        self.pcd_publisher = self.create_publisher(
+            sensor_msgs.PointCloud2,  # Msg type
+            "static_object_segmentation_node/rviz2",  # topic
+            10,  # QoS
+        )
+
+        timer_period = 1 / 10  # seconds
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+
     def listener_callback(self, msg):
-        # Convert the 'msg', which is of type PointCloud2.
-        pcd_as_numpy_array = np.array(list(read_points(msg)))
-        self.get_logger().info(f"Array size: {pcd_as_numpy_array.size}")
+        # self.get_logger().info(
+        #     f"header: {msg.header} "
+        #     + f"fields: {msg.fields} "
+        #     + f"width: {msg.width} "
+        #     + f"height: {msg.height} "
+        #     + f"point_step: {msg.point_step} "
+        #     + f"row_step: {msg.row_step}"
+        # )
+
+        # Convert the 'msg', which is of type PointCloud2 to a numpy array
+        self.pcd_as_numpy_array = np.array(
+            list(read_points(msg, field_names=["x", "y", "z"]))
+        )
+
+        # Convert the numpy array to a open3d PointCloud
+        self.o3d_pcd = o3d.geometry.PointCloud(
+            o3d.utility.Vector3dVector(self.pcd_as_numpy_array)
+        )
+
+        # Voxel downsampling uses a regular voxel grid to create
+        # a uniformly downsampled point cloud from an input point cloud.
+        # self.o3d_pcd = self.o3d_pcd.voxel_down_sample(voxel_size=0.05)
+
+        # Segment plane in attempt to remove ground plane
+        # distance_threshold defines the maximum distance a point can have
+        # to an estimated plane to be considered an inlier.
+        # ransac_n defines the number of points that are randomly samples to estimate a plane
+        # num_iterations defines how often a random plane is sampled and verified
+        plane_model, inliers = self.o3d_pcd.segment_plane(
+            distance_threshold=0.25, ransac_n=5, num_iterations=50
+        )
+
+        # Outliers = Points not part of ground plane
+        self.outlier_o3d_pcd = self.o3d_pcd.select_by_index(inliers, invert=True)
+
+        # Cluster points using dbscan
+        # eps defines the distance to neighbors in a cluster
+        # min_points defines the minimum numebr of points required to form a cluster
+        labels = np.array(self.outlier_o3d_pcd.cluster_dbscan(eps=0.50, min_points=10))
+
+        # Apply different colors to clusters
+        max_label = labels.max()
+        # print(f"point cloud has {max_label + 1} clusters")
+        colors = plt.get_cmap("tab20")(labels / (max_label if max_label > 0 else 1))
+        colors[labels < 0] = 0
+        self.outlier_o3d_pcd.colors = o3d.utility.Vector3dVector(colors[:, :3])
+
+        # This is for visualization of the received point cloud.
+        self.vis.clear_geometries()
+        self.vis.add_geometry(self.outlier_o3d_pcd)
+
+        self.view_control.set_front(
+            [-0.089934221049818977, -0.99314925303098789, -0.074608291014828354]
+        )
+        self.view_control.set_lookat(
+            [9.2692756652832031, 99.291183471679688, 9.1466994285583496]
+        )
+        self.view_control.set_up(
+            [-0.03194282842538148, -0.07199697911102805, 0.99689321931241603]
+        )
+        self.view_control.set_zoom(0.2999999999999996)
+
+        self.vis.poll_events()
+        self.vis.update_renderer()
+
+        # o3d.visualization.draw_geometries([self.o3d_pcd])
+
+    def timer_callback(self):
+        header = std_msgs.Header(frame_id="map")
+        self.pcd_publisher.publish(
+            create_cloud_xyz32(header, np.array(self.outlier_o3d_pcd.points))
+        )
 
 
 """
@@ -115,6 +225,56 @@ def read_points(cloud, field_names=None, skip_nans=False, uvs=[]):
                 for u in range(width):
                     yield unpack_from(data, offset)
                     offset += point_step
+
+
+def create_cloud(header, fields, points):
+    """
+    Create a sensor_msgs.msg.PointCloud2 message.
+    :param header: The point cloud header. (Type: std_msgs.msg.Header)
+    :param fields: The point cloud fields.
+                   (Type: iterable of sensor_msgs.msg.PointField)
+    :param points: The point cloud points. List of iterables, i.e. one iterable
+                   for each point, with the elements of each iterable being the
+                   values of the fields for that point (in the same order as
+                   the fields parameter)
+    :return: The point cloud as sensor_msgs.msg.PointCloud2
+    """
+    cloud_struct = struct.Struct(_get_struct_fmt(False, fields))
+
+    buff = ctypes.create_string_buffer(cloud_struct.size * len(points))
+
+    point_step, pack_into = cloud_struct.size, cloud_struct.pack_into
+    offset = 0
+    for p in points:
+        pack_into(buff, offset, *p)
+        offset += point_step
+
+    return PointCloud2(
+        header=header,
+        height=1,
+        width=len(points),
+        is_dense=False,
+        is_bigendian=False,
+        fields=fields,
+        point_step=cloud_struct.size,
+        row_step=cloud_struct.size * len(points),
+        data=buff.raw,
+    )
+
+
+def create_cloud_xyz32(header, points):
+    """
+    Create a sensor_msgs.msg.PointCloud2 message with (x, y, z) fields.
+    :param header: The point cloud header. (Type: std_msgs.msg.Header)
+    :param points: The point cloud points. (Type: Iterable)
+    :return: The point cloud as sensor_msgs.msg.PointCloud2.
+    """
+    fields = [
+        PointField(name="x", offset=0, datatype=PointField.FLOAT32, count=1),
+        PointField(name="y", offset=4, datatype=PointField.FLOAT32, count=1),
+        PointField(name="z", offset=8, datatype=PointField.FLOAT32, count=1),
+    ]
+    return create_cloud(header, fields, points)
 
 
 def _get_struct_fmt(is_bigendian, fields, field_names=None):
