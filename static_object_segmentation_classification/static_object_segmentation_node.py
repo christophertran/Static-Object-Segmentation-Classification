@@ -28,19 +28,10 @@ class SegmentationNode(Node):
         self.opt.background_color = np.array([0, 0, 0])
 
         self.view_control = self.vis.get_view_control()
-        self.view_control.set_front(
-            [-0.06833489914812628, -0.99570132429742775, 0.062523710308682964]
-        )
-        self.view_control.set_lookat(
-            [10.443239212036133, 100.25655364990234, 9.2428566217422485]
-        )
-        self.view_control.set_up(
-            [0.0055994441793673433, 0.062286438595372084, 0.9980426072027121]
-        )
-        self.view_control.set_zoom(0.69999999999999996)
 
         self.pcd_as_numpy_array = np.asarray([])
         self.o3d_pcd = o3d.geometry.PointCloud()
+        self.outlier_o3d_pcd = o3d.geometry.PointCloud()
 
         # Set up a subscription to the '/cepton/points' topic with a
         # callback to the function 'listener_callback'
@@ -72,6 +63,47 @@ class SegmentationNode(Node):
         #     + f"row_step: {msg.row_step}"
         # )
 
+        # Parameters for voxel_down_sample function
+        # voxel_size defines the size of the voxel for downsampling
+        voxel_size = 0.05
+
+        # Parameters for segment_plane function
+        # distance_threshold defines the maximum distance a point can have
+        # to an estimated plane to be considered an inlier
+        distance_threshold = 0.25
+        # ransac_n defines the number of points that are randomly samples to estimate a plane
+        ransac_n = 5
+        # num_iterations defines how often a random plane is sampled and verified
+        num_iterations = 50
+
+        # Parameters for cluster_dbscan function
+        # eps defines the distance to neighbors in a cluster
+        eps = 0.50
+        # min_points defines the minimum numebr of points required to form a cluster
+        min_points = 10
+
+        # Parameters for changing viewpoint of visualizer
+        # viewcontrol_front defines the front vector of the visualizer
+        viewcontrol_front = [
+            -0.089934221049818977,
+            -0.99314925303098789,
+            -0.074608291014828354,
+        ]
+        # viewcontrol_lookat defines the lookat vector of the visualizer
+        viewcontrol_lookat = [
+            9.2692756652832031,
+            99.291183471679688,
+            9.1466994285583496,
+        ]
+        # viewcontrol_up defines the up vector of the visualizer
+        viewcontrol_up = [
+            -0.03194282842538148,
+            -0.07199697911102805,
+            0.99689321931241603,
+        ]
+        # viewcontrol_zoom defines the zoom of the visualizer
+        viewcontrol_zoom = 0.2999999999999996
+
         # Convert the 'msg', which is of type PointCloud2 to a numpy array
         self.pcd_as_numpy_array = np.array(
             list(read_points(msg, field_names=["x", "y", "z"]))
@@ -84,24 +116,22 @@ class SegmentationNode(Node):
 
         # Voxel downsampling uses a regular voxel grid to create
         # a uniformly downsampled point cloud from an input point cloud.
-        # self.o3d_pcd = self.o3d_pcd.voxel_down_sample(voxel_size=0.05)
+        self.o3d_pcd = self.o3d_pcd.voxel_down_sample(voxel_size=0.05)
 
         # Segment plane in attempt to remove ground plane
-        # distance_threshold defines the maximum distance a point can have
-        # to an estimated plane to be considered an inlier.
-        # ransac_n defines the number of points that are randomly samples to estimate a plane
-        # num_iterations defines how often a random plane is sampled and verified
         plane_model, inliers = self.o3d_pcd.segment_plane(
-            distance_threshold=0.25, ransac_n=5, num_iterations=50
+            distance_threshold=distance_threshold,
+            ransac_n=ransac_n,
+            num_iterations=num_iterations,
         )
 
         # Outliers = Points not part of ground plane
         self.outlier_o3d_pcd = self.o3d_pcd.select_by_index(inliers, invert=True)
 
         # Cluster points using dbscan
-        # eps defines the distance to neighbors in a cluster
-        # min_points defines the minimum numebr of points required to form a cluster
-        labels = np.array(self.outlier_o3d_pcd.cluster_dbscan(eps=0.50, min_points=10))
+        labels = np.array(
+            self.outlier_o3d_pcd.cluster_dbscan(eps=eps, min_points=min_points)
+        )
 
         # Apply different colors to clusters
         max_label = labels.max()
@@ -114,21 +144,22 @@ class SegmentationNode(Node):
         self.vis.clear_geometries()
         self.vis.add_geometry(self.outlier_o3d_pcd)
 
-        self.view_control.set_front(
-            [-0.089934221049818977, -0.99314925303098789, -0.074608291014828354]
-        )
-        self.view_control.set_lookat(
-            [9.2692756652832031, 99.291183471679688, 9.1466994285583496]
-        )
-        self.view_control.set_up(
-            [-0.03194282842538148, -0.07199697911102805, 0.99689321931241603]
-        )
-        self.view_control.set_zoom(0.2999999999999996)
+        # Move viewpoint camera
+        self.view_control.set_front(viewcontrol_front)
+        self.view_control.set_lookat(viewcontrol_lookat)
+        self.view_control.set_up(viewcontrol_up)
+        self.view_control.set_zoom(viewcontrol_zoom)
 
         self.vis.poll_events()
         self.vis.update_renderer()
 
-        # o3d.visualization.draw_geometries([self.o3d_pcd])
+        # o3d.visualization.draw_geometries(
+        #     [self.o3d_pcd],
+        #     front=viewcontrol_front,
+        #     lookat=viewcontrol_lookat,
+        #     up=viewcontrol_up,
+        #     zoom=viewcontrol_zoom,
+        # )
 
     def timer_callback(self):
         header = std_msgs.Header(frame_id="map")
