@@ -15,8 +15,8 @@ setup(
     zip_safe=True,
     maintainer='christophertran',
     maintainer_email='ctran457@gmail.com',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description='Static Object Segmentation Classification using LiDAR Point Cloud data.',
+    license='MIT License',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [

@@ -3,9 +3,9 @@
 <package format="3">
   <name>Static-Object-Segmentation-Classification</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Static Object Segmentation Classification using LiDAR Point Cloud data.</description>
   <maintainer email="ctran457@gmail.com">christophertran</maintainer>
-  <license>TODO: License declaration</license>
+  <license>MIT License</license>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
