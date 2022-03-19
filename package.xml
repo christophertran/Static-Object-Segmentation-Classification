@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>Static-Object-Segmentation-Classification</name>
+  <name>static_object_segmentation_classification</name>
   <version>0.0.0</version>
   <description>Static Object Segmentation Classification using LiDAR Point Cloud data.</description>
   <maintainer email="ctran457@gmail.com">christophertran</maintainer>

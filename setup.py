@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'Static-Object-Segmentation-Classification'
+package_name = 'static_object_segmentation_classification'
 
 setup(
     name=package_name,
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'static_object_segmentation_node = Static-Object-Segmentation-Classification.static_object_segmentation_node:main'
+            'static_object_segmentation_node = static_object_segmentation_classification.static_object_segmentation_node:main'
         ],
     },
 )
