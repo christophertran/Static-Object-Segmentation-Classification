@@ -1,6 +1,8 @@
 # Static-Object-Segmentation-Classification
 
-## sensor_msgs/msg/PointCloud2
+## Topic
+### /cepton/points
+Type: sensor_msgs/msg/PointCloud2
 
 [ros2 python code](https://github.com/ros2/common_interfaces/blob/master/sensor_msgs_py/sensor_msgs_py/point_cloud2.py)
 
