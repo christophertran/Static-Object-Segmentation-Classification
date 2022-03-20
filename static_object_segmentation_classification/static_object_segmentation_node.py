@@ -11,9 +11,11 @@ import open3d as o3d
 import matplotlib.pyplot as plt
 
 
-# TOPIC = "lidar_left/velodyne_points"
-# TOPIC = "lidar_right/velodyne_points"
-TOPIC = "cepton/points"
+# SUB_TOPIC = "lidar_left/velodyne_points"
+# SUB_TOPIC = "lidar_right/velodyne_points"
+SUB_TOPIC = "cepton/points"
+
+PUB_TOPIC = "static_object_segmentation_node/labels"
 
 
 class SegmentationNode(Node):
@@ -25,7 +27,7 @@ class SegmentationNode(Node):
         self.vis.create_window()
 
         self.opt = self.vis.get_render_option()
-        self.opt.background_color = np.array([0, 0, 0])
+        self.opt.background_color = np.asarray([255, 255, 255])
 
         self.view_control = self.vis.get_view_control()
 
@@ -33,20 +35,20 @@ class SegmentationNode(Node):
         self.o3d_pcd = o3d.geometry.PointCloud()
         self.outlier_o3d_pcd = o3d.geometry.PointCloud()
 
-        # Set up a subscription to the '/cepton/points' topic with a
+        # Set up a subscription to the SUB_TOPIC topic with a
         # callback to the function 'listener_callback'
         self.pcd_subscriber = self.create_subscription(
             sensor_msgs.PointCloud2,  # Msg type
-            TOPIC,  # topic
+            SUB_TOPIC,  # topic
             self.listener_callback,  # Function to call
             10,  # QoS
         )
 
-        # Set up a publisher to the 'static_object_segmentation_node/points' topic
+        # Set up a publisher to the PUB_TOPIC topic
         # with a callback to the function 'timer_callback'
         self.pcd_publisher = self.create_publisher(
             sensor_msgs.PointCloud2,  # Msg type
-            "static_object_segmentation_node/rviz2",  # topic
+            PUB_TOPIC,  # topic
             10,  # QoS
         )
 
@@ -80,7 +82,7 @@ class SegmentationNode(Node):
         # eps defines the distance to neighbors in a cluster
         eps = 0.50
         # min_points defines the minimum numebr of points required to form a cluster
-        min_points = 10
+        min_points = 5
 
         # Parameters for changing viewpoint of visualizer
         # viewcontrol_front defines the front vector of the visualizer
@@ -105,13 +107,11 @@ class SegmentationNode(Node):
         viewcontrol_zoom = 0.2999999999999996
 
         # Convert the 'msg', which is of type PointCloud2 to a numpy array
-        self.pcd_as_numpy_array = np.array(
-            list(read_points(msg, field_names=["x", "y", "z"]))
-        )
-
         # Convert the numpy array to a open3d PointCloud
         self.o3d_pcd = o3d.geometry.PointCloud(
-            o3d.utility.Vector3dVector(self.pcd_as_numpy_array)
+            o3d.utility.Vector3dVector(
+                np.asarray(list(read_points(msg, field_names=["x", "y", "z"])))
+            )
         )
 
         # Voxel downsampling uses a regular voxel grid to create
@@ -129,16 +129,22 @@ class SegmentationNode(Node):
         self.outlier_o3d_pcd = self.o3d_pcd.select_by_index(inliers, invert=True)
 
         # Cluster points using dbscan
-        labels = np.array(
+        labels = np.asarray(
             self.outlier_o3d_pcd.cluster_dbscan(eps=eps, min_points=min_points)
         )
 
         # Apply different colors to clusters
         max_label = labels.max()
-        # print(f"point cloud has {max_label + 1} clusters")
+        print(f"point cloud has {max_label + 1} clusters")
         colors = plt.get_cmap("tab20")(labels / (max_label if max_label > 0 else 1))
         colors[labels < 0] = 0
         self.outlier_o3d_pcd.colors = o3d.utility.Vector3dVector(colors[:, :3])
+
+        # Output that is being published, it is a point cloud and each point is labeled
+        # and either in a cluster labeled [0, n] or is labeled -1 for noise.
+        self.pcd_as_numpy_array = np.append(
+            np.asarray(self.outlier_o3d_pcd.points), labels.reshape(-1, 1), axis=1
+        )
 
         # This is for visualization of the received point cloud.
         self.vis.clear_geometries()
@@ -163,9 +169,7 @@ class SegmentationNode(Node):
 
     def timer_callback(self):
         header = std_msgs.Header(frame_id="map")
-        self.pcd_publisher.publish(
-            create_cloud_xyz32(header, np.array(self.outlier_o3d_pcd.points))
-        )
+        self.pcd_publisher.publish(create_cloud_xyz32(header, self.pcd_as_numpy_array))
 
 
 """
@@ -304,6 +308,7 @@ def create_cloud_xyz32(header, points):
         PointField(name="x", offset=0, datatype=PointField.FLOAT32, count=1),
         PointField(name="y", offset=4, datatype=PointField.FLOAT32, count=1),
         PointField(name="z", offset=8, datatype=PointField.FLOAT32, count=1),
+        PointField(name="label", offset=12, datatype=PointField.FLOAT32, count=1),
     ]
     return create_cloud(header, fields, points)
 
