@@ -31,6 +31,7 @@ $ ros2 bag play ~/Path/To/Bag -s rosbag_v2 -l
 
 ### Terminal 2
 This terminal will be used to build and run the ROS2 nodes
+Specfically the static_object_segmentation_node
 ```txt
 # Open dev_ws
 $ cd ~/dev_ws/
@@ -53,7 +54,32 @@ $ source install/setup.bash
 $ ros2 run static_object_segmentation_classification static_object_segmentation_node
 ```
 
-### Terminal 3 (optional)
+### Terminal 3
+This terminal will be used to build and run the ROS2 nodes
+Specifically the static_object_classification_node
+```txt
+# Open dev_ws
+$ cd ~/dev_ws/
+
+
+# Source ROS2 install
+$ source /opt/ros/foxy/setup.bash
+
+
+# Build static_object_segmentation_classification package using colcon
+# --symlink-install prevents having to build again after changing python scripts
+$ colcon build --symlink-install --packages-select static_object_segmentation_classification
+
+
+# Source overlay
+$ source install/setup.bash
+
+
+# Run static_object_classification_node
+$ ros2 run static_object_segmentation_classification static_object_classification_node
+```
+
+### Terminal 4 (optional)
 This terminal will be used for running rviz2
 ```txt
 # Source ROS2 install
