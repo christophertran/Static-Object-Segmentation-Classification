@@ -11,14 +11,14 @@ import open3d as o3d
 import matplotlib.pyplot as plt
 
 
-SUB_TOPIC = "cepton/points"
+SUB_TOPIC = "static_object_segmentation_node/labels"
 
-PUB_TOPIC = "static_object_segmentation_node/labels"
+PUB_TOPIC = "static_object_classification_node/classifications"
 
 
 class SegmentationNode(Node):
     def __init__(self):
-        super().__init__("static_object_segmentation_node")
+        super().__init__("static_object_classification_node")
 
         # This is for visualization of the received point cloud.
         self.vis = o3d.visualization.Visualizer()
@@ -31,7 +31,6 @@ class SegmentationNode(Node):
 
         self.pcd_as_numpy_array = np.asarray([])
         self.o3d_pcd = o3d.geometry.PointCloud()
-        self.outlier_o3d_pcd = o3d.geometry.PointCloud()
 
         # Set up a subscription to the SUB_TOPIC topic with a
         # callback to the function 'listener_callback'
@@ -54,34 +53,6 @@ class SegmentationNode(Node):
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
     def listener_callback(self, msg):
-        # self.get_logger().info(
-        #     f"header: {msg.header} "
-        #     + f"fields: {msg.fields} "
-        #     + f"width: {msg.width} "
-        #     + f"height: {msg.height} "
-        #     + f"point_step: {msg.point_step} "
-        #     + f"row_step: {msg.row_step}"
-        # )
-
-        # Parameters for voxel_down_sample function
-        # voxel_size defines the size of the voxel for downsampling
-        voxel_size = 0.05
-
-        # Parameters for segment_plane function
-        # distance_threshold defines the maximum distance a point can have
-        # to an estimated plane to be considered an inlier
-        distance_threshold = 0.25
-        # ransac_n defines the number of points that are randomly samples to estimate a plane
-        ransac_n = 5
-        # num_iterations defines how often a random plane is sampled and verified
-        num_iterations = 50
-
-        # Parameters for cluster_dbscan function
-        # eps defines the distance to neighbors in a cluster
-        eps = 0.50
-        # min_points defines the minimum numebr of points required to form a cluster
-        min_points = 5
-
         # Parameters for changing viewpoint of visualizer
         # viewcontrol_front defines the front vector of the visualizer
         viewcontrol_front = [
@@ -105,48 +76,34 @@ class SegmentationNode(Node):
         viewcontrol_zoom = 0.2999999999999996
 
         # Convert the 'msg', which is of type PointCloud2 to a numpy array
+        points_and_labels = np.asarray(
+            list(read_points(msg, field_names=["x", "y", "z", "label"]))
+        )
+
+        # ["x", "y", "z"] point cloud coordinates
+        points = points_and_labels[:, :3]
+
+        # ["label"] of specific point cloud coordinate
+        # Each label is either -1 for noise, or [0, n] where each
+        # point is related to a specific cluster of points.
+        # TODO: Classify the points above based on the labels given
+        labels = points_and_labels[:, 3:].flatten()
+
+        # TODO: Find a way to classify and then pass on the message to be visualized by rviz2
+
         # Convert the numpy array to a open3d PointCloud
-        self.o3d_pcd = o3d.geometry.PointCloud(
-            o3d.utility.Vector3dVector(
-                np.asarray(list(read_points(msg, field_names=["x", "y", "z"])))
-            )
-        )
-
-        # Voxel downsampling uses a regular voxel grid to create
-        # a uniformly downsampled point cloud from an input point cloud.
-        self.o3d_pcd = self.o3d_pcd.voxel_down_sample(voxel_size=0.05)
-
-        # Segment plane in attempt to remove ground plane
-        plane_model, inliers = self.o3d_pcd.segment_plane(
-            distance_threshold=distance_threshold,
-            ransac_n=ransac_n,
-            num_iterations=num_iterations,
-        )
-
-        # Outliers = Points not part of ground plane
-        self.outlier_o3d_pcd = self.o3d_pcd.select_by_index(inliers, invert=True)
-
-        # Cluster points using dbscan
-        labels = np.asarray(
-            self.outlier_o3d_pcd.cluster_dbscan(eps=eps, min_points=min_points)
-        )
+        self.o3d_pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
 
         # Apply different colors to clusters
         max_label = labels.max()
         print(f"point cloud has {max_label + 1} clusters")
         colors = plt.get_cmap("tab20")(labels / (max_label if max_label > 0 else 1))
         colors[labels < 0] = 0
-        self.outlier_o3d_pcd.colors = o3d.utility.Vector3dVector(colors[:, :3])
-
-        # Output that is being published, it is a point cloud and each point is labeled
-        # and either in a cluster labeled [0, n] or is labeled -1 for noise.
-        self.pcd_as_numpy_array = np.append(
-            np.asarray(self.outlier_o3d_pcd.points), labels.reshape(-1, 1), axis=1
-        )
+        self.o3d_pcd.colors = o3d.utility.Vector3dVector(colors[:, :3])
 
         # This is for visualization of the received point cloud.
         self.vis.clear_geometries()
-        self.vis.add_geometry(self.outlier_o3d_pcd)
+        self.vis.add_geometry(self.o3d_pcd)
 
         # Move viewpoint camera
         self.view_control.set_front(viewcontrol_front)
@@ -157,19 +114,9 @@ class SegmentationNode(Node):
         self.vis.poll_events()
         self.vis.update_renderer()
 
-        # o3d.visualization.draw_geometries(
-        #     [self.o3d_pcd],
-        #     front=viewcontrol_front,
-        #     lookat=viewcontrol_lookat,
-        #     up=viewcontrol_up,
-        #     zoom=viewcontrol_zoom,
-        # )
-
     def timer_callback(self):
-        header = std_msgs.Header(frame_id="map")
-
-        # This function has be modified to add a "label" field to the message
-        self.pcd_publisher.publish(create_cloud_xyz32(header, self.pcd_as_numpy_array))
+        # TODO: Implement this callback function that will publish the final message with classifications
+        pass
 
 
 """
@@ -308,7 +255,6 @@ def create_cloud_xyz32(header, points):
         PointField(name="x", offset=0, datatype=PointField.FLOAT32, count=1),
         PointField(name="y", offset=4, datatype=PointField.FLOAT32, count=1),
         PointField(name="z", offset=8, datatype=PointField.FLOAT32, count=1),
-        PointField(name="label", offset=12, datatype=PointField.FLOAT32, count=1),
     ]
     return create_cloud(header, fields, points)
 

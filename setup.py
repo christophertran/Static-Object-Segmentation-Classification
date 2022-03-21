@@ -19,7 +19,8 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "static_object_segmentation_node = static_object_segmentation_classification.static_object_segmentation_node:main"
+            "static_object_classification_node = static_object_segmentation_classification.static_object_classification_node:main",
+            "static_object_segmentation_node = static_object_segmentation_classification.static_object_segmentation_node:main",
         ],
     },
 )
