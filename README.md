@@ -6,7 +6,7 @@ Instructions created following comments from [this](https://github.com/ros2/rosb
 2. Ensure you have ROS1 Noetic installed. [Source](http://wiki.ros.org/noetic)
 3. Open a new terminal and install the rosbag_v2 plugin
     ```txt
-    $ sudo apt install ros-dashing-rosbag2-bag-v2-plugins
+    $ sudo apt install ros-foxy-rosbag2-bag-v2-plugins
     ```
 4. Now you can playback ROS1 bags using ROS2 by following the instructions under [Terminal 1](###terminal-1)
 
