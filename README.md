@@ -60,8 +60,9 @@ This terminal will be used for running rviz2
 $ source /opt/ros/foxy/setup.bash
 
 
-# Visualize using rviz2
-$ ros2 run rviz2 rviz2
+# Visualize using rviz2 (using the config file provided)
+# Add a "&" to the end of the command to launch rviz2 as a background process
+$ ros2 run rviz2 rviz2 -d ~/dev_ws/src/Static-Object-Segmentation-Classification/config/config.rviz
 ```
 
 ## Topic
