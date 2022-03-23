@@ -33,6 +33,8 @@ class SegmentationNode(Node):
         self.pcd_as_numpy_array = np.asarray([])
         self.o3d_pcd = o3d.geometry.PointCloud()
 
+        self.bboxs = []
+
         # Set up a subscription to the SUB_TOPIC topic with a
         # callback to the function 'listener_callback'
         self.pcd_subscriber = self.create_subscription(
