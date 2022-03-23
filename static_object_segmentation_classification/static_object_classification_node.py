@@ -88,22 +88,24 @@ class SegmentationNode(Node):
         # Each label is either -1 for noise, or [0, n] where each
         # point is related to a specific cluster of points.
         labels = points_and_labels[:, 3:].flatten()
-        
-        # TODO: Put bounding boxes around point clusters
-        #print(points)
+
         dictionary = defaultdict(list)
         for key, value in zip(labels, points):
-        	dictionary[key].append(value)
-        print(dict(dictionary))
-        self.bbox = o3d.geometry.OrientedBoundingBox() 
+            dictionary[key].append(value)
+
+        self.bboxs = []
         for key in dictionary:
-        	dictionary[key] = np.asarray(dictionary[key])
-        	#print(key, dictionary[key])
-        	#self.bbox.create_from_points(o3d.utility.Vector3dVector(dictionary[key]))
-		
+            dictionary[key] = np.asarray(dictionary[key])
+
+            # Must have more than 4 points (rows) to create a bounding box
+            if dictionary[key].shape[0] >= 20:
+                self.bboxs.append(
+                    o3d.geometry.AxisAlignedBoundingBox().create_from_points(
+                        o3d.utility.Vector3dVector(dictionary[key])
+                    )
+                )
+
         # TODO: Classify the points above based on the labels given
-        
-	
 
         # TODO: Find a way to classify and then pass on the message to be visualized by rviz2
 
@@ -112,7 +114,7 @@ class SegmentationNode(Node):
 
         # Apply different colors to clusters
         max_label = labels.max()
-        print(f"point cloud has {max_label + 1} clusters")
+        print(f"point cloud has {int(max_label + 1)} clusters")
         colors = plt.get_cmap("tab20")(labels / (max_label if max_label > 0 else 1))
         colors[labels < 0] = 0
         self.o3d_pcd.colors = o3d.utility.Vector3dVector(colors[:, :3])
@@ -120,6 +122,10 @@ class SegmentationNode(Node):
         # This is for visualization of the received point cloud.
         self.vis.clear_geometries()
         self.vis.add_geometry(self.o3d_pcd)
+
+        # Draw bounding boxes
+        for bbox in self.bboxs:
+            self.vis.add_geometry(bbox)
 
         # Move viewpoint camera
         self.view_control.set_front(viewcontrol_front)

@@ -80,7 +80,7 @@ class SegmentationNode(Node):
         # eps defines the distance to neighbors in a cluster
         eps = 0.50
         # min_points defines the minimum numebr of points required to form a cluster
-        min_points = 5
+        min_points = 20
 
         # Parameters for changing viewpoint of visualizer
         # viewcontrol_front defines the front vector of the visualizer
