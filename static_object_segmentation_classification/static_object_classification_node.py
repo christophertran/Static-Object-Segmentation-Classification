@@ -10,6 +10,7 @@ import numpy as np
 import open3d as o3d
 import matplotlib.pyplot as plt
 
+from collections import defaultdict
 
 SUB_TOPIC = "static_object_segmentation_node/labels"
 
@@ -89,16 +90,17 @@ class SegmentationNode(Node):
         labels = points_and_labels[:, 3:].flatten()
         
         # TODO: Put bounding boxes around point clusters
-        print(points)
-        print(labels)
-        dictionary = {}
-        for i in range(len(labels)):
-        	dictionary[labels[i]] = points[i]
-        #print(dictionary)
+        #print(points)
+        dictionary = defaultdict(list)
+        for key, value in zip(labels, points):
+        	dictionary[key].append(value)
+        print(dict(dictionary))
         self.bbox = o3d.geometry.OrientedBoundingBox() 
-        #for i in range(0, len(points)):
-        #	self.bbox.create_from_points(o3d.utility.Vector3dVector(points))
-
+        for key in dictionary:
+        	dictionary[key] = np.asarray(dictionary[key])
+        	#print(key, dictionary[key])
+        	#self.bbox.create_from_points(o3d.utility.Vector3dVector(dictionary[key]))
+		
         # TODO: Classify the points above based on the labels given
         
 	
