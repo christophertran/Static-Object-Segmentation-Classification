@@ -86,8 +86,22 @@ class SegmentationNode(Node):
         # ["label"] of specific point cloud coordinate
         # Each label is either -1 for noise, or [0, n] where each
         # point is related to a specific cluster of points.
-        # TODO: Classify the points above based on the labels given
         labels = points_and_labels[:, 3:].flatten()
+        
+        # TODO: Put bounding boxes around point clusters
+        print(points)
+        print(labels)
+        dictionary = {}
+        for i in range(len(labels)):
+        	dictionary[labels[i]] = points[i]
+        #print(dictionary)
+        self.bbox = o3d.geometry.OrientedBoundingBox() 
+        #for i in range(0, len(points)):
+        #	self.bbox.create_from_points(o3d.utility.Vector3dVector(points))
+
+        # TODO: Classify the points above based on the labels given
+        
+	
 
         # TODO: Find a way to classify and then pass on the message to be visualized by rviz2
 
