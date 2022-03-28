@@ -6,8 +6,10 @@ from rclpy.node import Node
 import sensor_msgs.msg as sensor_msgs
 import std_msgs.msg as std_msgs
 import vision_msgs.msg as vision_msgs
+import geometry_msgs.msg as geometry_msgs
 
 import numpy as np
+import pyquaternion as pyq
 import open3d as o3d
 import matplotlib.pyplot as plt
 
@@ -15,7 +17,7 @@ from collections import defaultdict
 
 SUB_TOPIC = "static_object_segmentation_node/labels"
 
-PUB_TOPIC = "static_object_classification_node/classifications"
+PUB_TOPIC = "static_object_classification_node/bounding_boxes"
 
 
 class SegmentationNode(Node):
@@ -36,6 +38,8 @@ class SegmentationNode(Node):
 
         self.o3d_bboxs = []
 
+        self.bboxs = []
+
         # Set up a subscription to the SUB_TOPIC topic with a
         # callback to the function 'listener_callback'
         self.pcd_subscriber = self.create_subscription(
@@ -48,7 +52,7 @@ class SegmentationNode(Node):
         # Set up a publisher to the PUB_TOPIC topic
         # with a callback to the function 'timer_callback'
         self.pcd_publisher = self.create_publisher(
-            sensor_msgs.PointCloud2,  # Msg type
+            vision_msgs.BoundingBox3DArray,  # Msg type
             PUB_TOPIC,  # topic
             10,  # QoS
         )
@@ -108,6 +112,90 @@ class SegmentationNode(Node):
                     )
                 )
 
+        """
+        vision_msgs/BoundingBox3DArray.msg
+            std_msgs/Header header
+            vision_msgs/BoundingBox3D[] boxes
+
+        vision_msgs/BoundingBox3D.msg
+            # A 3D bounding box that can be positioned and rotated about its center (6 DOF)
+            # Dimensions of this box are in meters, and as such, it may be migrated to
+            #   another package, such as geometry_msgs, in the future.
+
+            # The 3D position and orientation of the bounding box center
+            geometry_msgs/Pose center
+
+            # The size of the bounding box, in meters, surrounding the object's center
+            #   pose.
+            geometry_msgs/Vector3 size
+        
+        geometry_msgs/Pose.msg
+            # A representation of pose in free space, composed of position and orientation. 
+            Point position
+            Quaternion orientation
+
+        geometry_msgs/Vector3.msg
+            # This represents a vector in free space. 
+            # It is only meant to represent a direction. Therefore, it does not
+            # make sense to apply a translation to it (e.g., when applying a 
+            # generic rigid transformation to a Vector3, tf2 will only apply the
+            # rotation). If you want your data to be translatable too, use the
+            # geometry_msgs/Point message instead.
+
+            float64 x
+            float64 y
+            float64 z
+
+        geometry_msgs/Point.msg
+            # This contains the position of a point in free space
+            float64 x
+            float64 y
+            float64 z
+
+        geometry_msgs/Quaternion.msg
+            # This represents an orientation in free space in quaternion form.
+            float64 x
+            float64 y
+            float64 z
+            float64 w
+        """
+
+        # TODO: Complete this loop to create a vision_msgs/BoundingBox3DArray
+
+        self.bboxs = []
+        for o3d_bbox in self.o3d_bboxs:
+            # Items needed to create Point
+            o3d_bbox_center = o3d_bbox.get_center()
+            x1, y1, z1 = o3d_bbox_center[0], o3d_bbox_center[1], o3d_bbox_center[2]
+
+            # Items needed to create Quarternion
+            pyq_quaternion = pyq.Quaternion(
+                matrix=o3d_bbox.get_oriented_bounding_box().R
+            )
+            x2, y2, z2, w2 = (
+                pyq_quaternion[0],
+                pyq_quaternion[1],
+                pyq_quaternion[2],
+                pyq_quaternion[3],
+            )
+
+            # Items needed to create Pose
+            position = geometry_msgs.Point(x=x1, y=y1, z=z1)
+            orientation = geometry_msgs.Quaternion(x=x2, y=y2, z=z2, w=w2)
+
+            # Items needed to create Vector3
+            o3d_bbox_extent = o3d_bbox.get_extent()
+            x3, y3, z3 = o3d_bbox_extent[0], o3d_bbox_extent[1], o3d_bbox_extent[2]
+
+            # Items needed to create BoundingBox3D
+            center = geometry_msgs.Pose(position=position, orientation=orientation)
+            size = geometry_msgs.Vector3(x=x3, y=y3, z=z3)
+
+            # Items needed to create BoundingBox3DArray
+            bbox = vision_msgs.BoundingBox3D(center=center, size=size)
+
+            self.bboxs.append(bbox)
+
         # TODO: Classify the points above based on the labels given
 
         # TODO: Find a way to classify and then pass on the message to be visualized by rviz2
@@ -127,8 +215,8 @@ class SegmentationNode(Node):
         self.vis.add_geometry(self.o3d_pcd)
 
         # Draw bounding boxes
-        for bbox in self.o3d_bboxs:
-            self.vis.add_geometry(bbox)
+        for o3d_bbox in self.o3d_bboxs:
+            self.vis.add_geometry(o3d_bbox)
 
         # Move viewpoint camera
         self.view_control.set_front(viewcontrol_front)
@@ -141,7 +229,12 @@ class SegmentationNode(Node):
 
     def timer_callback(self):
         # TODO: Implement this callback function that will publish the final message with classifications
-        pass
+        header = std_msgs.Header(frame_id="map")
+
+        # This function has be modified to add a "label" field to the message
+        self.pcd_publisher.publish(
+            vision_msgs.BoundingBox3DArray(header=header, boxes=self.bboxs)
+        )
 
 
 """

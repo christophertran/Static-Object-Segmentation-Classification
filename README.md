@@ -1,5 +1,8 @@
 # Static-Object-Segmentation-Classification
 
+## Displaying BoundingBoxArray in RVIZ2
+[Source](https://gitlab.com/autowarefoundation/autoware.auto/AutowareAuto/-/tree/master/src/tools/visualization/autoware_rviz_plugins)
+
 ## Environment Setup
 Instructions created following comments from [this](https://github.com/ros2/rosbag2/issues/139) thread
 1. Ensure you have ROS2 Foxy installed. [Source](https://docs.ros.org/en/foxy/index.html)
