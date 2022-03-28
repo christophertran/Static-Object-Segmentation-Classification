@@ -5,6 +5,7 @@ import rclpy
 from rclpy.node import Node
 import sensor_msgs.msg as sensor_msgs
 import std_msgs.msg as std_msgs
+import vision_msgs.msg as vision_msgs
 
 import numpy as np
 import open3d as o3d
@@ -33,7 +34,7 @@ class SegmentationNode(Node):
         self.pcd_as_numpy_array = np.asarray([])
         self.o3d_pcd = o3d.geometry.PointCloud()
 
-        self.bboxs = []
+        self.o3d_bboxs = []
 
         # Set up a subscription to the SUB_TOPIC topic with a
         # callback to the function 'listener_callback'
@@ -59,9 +60,9 @@ class SegmentationNode(Node):
         # Parameters for changing viewpoint of visualizer
         # viewcontrol_front defines the front vector of the visualizer
         viewcontrol_front = [
-            -0.089934221049818977,
-            -0.99314925303098789,
-            -0.074608291014828354,
+            0.23538596599412731,
+            0.96806955242252957,
+            0.08622522070400708,
         ]
         # viewcontrol_lookat defines the lookat vector of the visualizer
         viewcontrol_lookat = [
@@ -71,12 +72,12 @@ class SegmentationNode(Node):
         ]
         # viewcontrol_up defines the up vector of the visualizer
         viewcontrol_up = [
-            -0.03194282842538148,
-            -0.07199697911102805,
-            0.99689321931241603,
+            0.90693164772525692,
+            -0.25067728739998607,
+            0.33857921367995325,
         ]
         # viewcontrol_zoom defines the zoom of the visualizer
-        viewcontrol_zoom = 0.2999999999999996
+        viewcontrol_zoom = 0.02
 
         # Convert the 'msg', which is of type PointCloud2 to a numpy array
         points_and_labels = np.asarray(
@@ -95,13 +96,13 @@ class SegmentationNode(Node):
         for key, value in zip(labels, points):
             dictionary[key].append(value)
 
-        self.bboxs = []
+        self.o3d_bboxs = []
         for key in dictionary:
             dictionary[key] = np.asarray(dictionary[key])
 
             # Must have more than 4 points (rows) to create a bounding box
             if dictionary[key].shape[0] >= 20:
-                self.bboxs.append(
+                self.o3d_bboxs.append(
                     o3d.geometry.AxisAlignedBoundingBox().create_from_points(
                         o3d.utility.Vector3dVector(dictionary[key])
                     )
@@ -126,7 +127,7 @@ class SegmentationNode(Node):
         self.vis.add_geometry(self.o3d_pcd)
 
         # Draw bounding boxes
-        for bbox in self.bboxs:
+        for bbox in self.o3d_bboxs:
             self.vis.add_geometry(bbox)
 
         # Move viewpoint camera

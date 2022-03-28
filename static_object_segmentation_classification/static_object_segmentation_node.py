@@ -20,18 +20,9 @@ class SegmentationNode(Node):
     def __init__(self):
         super().__init__("static_object_segmentation_node")
 
-        # This is for visualization of the received point cloud.
-        self.vis = o3d.visualization.Visualizer()
-        self.vis.create_window()
-
-        self.opt = self.vis.get_render_option()
-        self.opt.background_color = np.asarray([255, 255, 255])
-
-        self.view_control = self.vis.get_view_control()
-
         self.pcd_as_numpy_array = np.asarray([])
         self.o3d_pcd = o3d.geometry.PointCloud()
-        self.outlier_o3d_pcd = o3d.geometry.PointCloud()
+        self.final_o3d_pcd = o3d.geometry.PointCloud()
 
         # Set up a subscription to the SUB_TOPIC topic with a
         # callback to the function 'listener_callback'
@@ -82,28 +73,6 @@ class SegmentationNode(Node):
         # min_points defines the minimum numebr of points required to form a cluster
         min_points = 20
 
-        # Parameters for changing viewpoint of visualizer
-        # viewcontrol_front defines the front vector of the visualizer
-        viewcontrol_front = [
-            -0.089934221049818977,
-            -0.99314925303098789,
-            -0.074608291014828354,
-        ]
-        # viewcontrol_lookat defines the lookat vector of the visualizer
-        viewcontrol_lookat = [
-            9.2692756652832031,
-            99.291183471679688,
-            9.1466994285583496,
-        ]
-        # viewcontrol_up defines the up vector of the visualizer
-        viewcontrol_up = [
-            -0.03194282842538148,
-            -0.07199697911102805,
-            0.99689321931241603,
-        ]
-        # viewcontrol_zoom defines the zoom of the visualizer
-        viewcontrol_zoom = 0.2999999999999996
-
         # Convert the 'msg', which is of type PointCloud2 to a numpy array
         # Convert the numpy array to a open3d PointCloud
         self.o3d_pcd = o3d.geometry.PointCloud(
@@ -114,7 +83,7 @@ class SegmentationNode(Node):
 
         # Voxel downsampling uses a regular voxel grid to create
         # a uniformly downsampled point cloud from an input point cloud.
-        self.o3d_pcd = self.o3d_pcd.voxel_down_sample(voxel_size=0.05)
+        self.o3d_pcd = self.o3d_pcd.voxel_down_sample(voxel_size=voxel_size)
 
         # Segment plane in attempt to remove ground plane
         plane_model, inliers = self.o3d_pcd.segment_plane(
@@ -124,46 +93,22 @@ class SegmentationNode(Node):
         )
 
         # Outliers = Points not part of ground plane
-        self.outlier_o3d_pcd = self.o3d_pcd.select_by_index(inliers, invert=True)
+        outlier_o3d_pcd = self.o3d_pcd.select_by_index(inliers, invert=True)
 
         # Cluster points using dbscan
         labels = np.asarray(
-            self.outlier_o3d_pcd.cluster_dbscan(eps=eps, min_points=min_points)
+            outlier_o3d_pcd.cluster_dbscan(eps=eps, min_points=min_points)
         )
 
-        # Apply different colors to clusters
-        max_label = labels.max()
-        print(f"point cloud has {max_label + 1} clusters")
-        colors = plt.get_cmap("tab20")(labels / (max_label if max_label > 0 else 1))
-        colors[labels < 0] = 0
-        self.outlier_o3d_pcd.colors = o3d.utility.Vector3dVector(colors[:, :3])
+        # Remove noise points from point cloud
+        self.final_o3d_pcd = outlier_o3d_pcd.select_by_index(np.where(labels > -1)[0])
+        labels = labels[labels > -1]
 
         # Output that is being published, it is a point cloud and each point is labeled
         # and either in a cluster labeled [0, n] or is labeled -1 for noise.
         self.pcd_as_numpy_array = np.append(
-            np.asarray(self.outlier_o3d_pcd.points), labels.reshape(-1, 1), axis=1
+            np.asarray(self.final_o3d_pcd.points), labels.reshape(-1, 1), axis=1
         )
-
-        # This is for visualization of the received point cloud.
-        self.vis.clear_geometries()
-        self.vis.add_geometry(self.outlier_o3d_pcd)
-
-        # Move viewpoint camera
-        self.view_control.set_front(viewcontrol_front)
-        self.view_control.set_lookat(viewcontrol_lookat)
-        self.view_control.set_up(viewcontrol_up)
-        self.view_control.set_zoom(viewcontrol_zoom)
-
-        self.vis.poll_events()
-        self.vis.update_renderer()
-
-        # o3d.visualization.draw_geometries(
-        #     [self.o3d_pcd],
-        #     front=viewcontrol_front,
-        #     lookat=viewcontrol_lookat,
-        #     up=viewcontrol_up,
-        #     zoom=viewcontrol_zoom,
-        # )
 
     def timer_callback(self):
         header = std_msgs.Header(frame_id="map")

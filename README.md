@@ -12,6 +12,18 @@ Instructions created following comments from [this](https://github.com/ros2/rosb
 
 ## How to Run
 
+### Additional Setup
+1. Create ~/dev_ws/src/ folder
+2. CD into ~/dev_ws/src/ folder
+3. Clone the following repos
+    - [Static-Object-Segmentation-Classification](https://github.tamu.edu/m-zavala22/Static-Object-Segmentation-Classification.git)
+    - [vision_msgs](https://github.com/ros-perception/vision_msgs.git)
+3. CD into ~/dev_ws/src/vision_msgs/
+4. Checkout the ros2 branch with
+    - `git checkout ros2`
+5. Now you are setup to continue the instructions
+6. Additional Tutorials/Help. [Source](https://docs.ros.org/en/foxy/Tutorials/Custom-ROS2-Interfaces.html)
+
 ### Terminal 1
 This terminal will be used to playback ROS `.bag` files
 ```txt
