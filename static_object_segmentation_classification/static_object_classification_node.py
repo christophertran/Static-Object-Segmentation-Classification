@@ -76,9 +76,9 @@ class SegmentationNode(Node):
         ]
         # viewcontrol_up defines the up vector of the visualizer
         viewcontrol_up = [
-            0.90693164772525692,
-            -0.25067728739998607,
-            0.33857921367995325,
+            0.25,
+            1,
+            1,
         ]
         # viewcontrol_zoom defines the zoom of the visualizer
         viewcontrol_zoom = 0.02
