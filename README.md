@@ -58,7 +58,7 @@ $ source /opt/ros/foxy/setup.bash
 
 # Build static_object_segmentation_classification package using colcon
 # --symlink-install prevents having to build again after changing python scripts
-$ colcon build --symlink-install --packages-select static_object_segmentation_classification
+$ colcon build --symlink-install
 
 
 # Source overlay
@@ -83,8 +83,7 @@ $ source /opt/ros/foxy/setup.bash
 
 # Build static_object_segmentation_classification package using colcon
 # --symlink-install prevents having to build again after changing python scripts
-$ colcon build --symlink-install --packages-select static_object_segmentation_classification
-
+$ colcon build --symlink-install
 
 # Source overlay
 $ source install/setup.bash
