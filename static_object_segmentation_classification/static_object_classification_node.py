@@ -64,24 +64,24 @@ class SegmentationNode(Node):
         # Parameters for changing viewpoint of visualizer
         # viewcontrol_front defines the front vector of the visualizer
         viewcontrol_front = [
-            0.23538596599412731,
-            0.96806955242252957,
-            0.08622522070400708,
+            -0.24,
+            -1.4,
+            0,
         ]
         # viewcontrol_lookat defines the lookat vector of the visualizer
         viewcontrol_lookat = [
-            9.2692756652832031,
-            99.291183471679688,
-            9.1466994285583496,
+            6,
+            60,
+            .6,
         ]
         # viewcontrol_up defines the up vector of the visualizer
         viewcontrol_up = [
-            0.25,
+            .2,
             1,
             1,
         ]
         # viewcontrol_zoom defines the zoom of the visualizer
-        viewcontrol_zoom = 0.02
+        viewcontrol_zoom = 0.5
 
         # Convert the 'msg', which is of type PointCloud2 to a numpy array
         points_and_labels = np.asarray(
