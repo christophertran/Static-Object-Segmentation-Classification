@@ -39,7 +39,7 @@ class SegmentationNode(Node):
         self.o3d_bboxs = []
 
         self.bboxs = []
-
+        
         # Set up a subscription to the SUB_TOPIC topic with a
         # callback to the function 'listener_callback'
         self.pcd_subscriber = self.create_subscription(
@@ -163,6 +163,8 @@ class SegmentationNode(Node):
         # TODO: Complete this loop to create a vision_msgs/BoundingBox3DArray
 
         self.bboxs = []
+        classifications = []
+        counter = 0
         for o3d_bbox in self.o3d_bboxs:
             # Items needed to create Point
             o3d_bbox_center = o3d_bbox.get_center()
@@ -193,8 +195,23 @@ class SegmentationNode(Node):
 
             # Items needed to create BoundingBox3DArray
             bbox = vision_msgs.BoundingBox3D(center=center, size=size)
-
+            
+            ''' if (o3d_bbox.volume() > 10):
+            	print("volume: ", o3d_bbox.volume())
+            	print("center: ", o3d_bbox.get_center())
+            	print(o3d_bbox) '''
+          
             self.bboxs.append(bbox)
+            classifications.append([bbox])
+            
+            # car > 10 volume
+            if (o3d_bbox.volume() > 10):
+            	classifications[counter].append("car")
+            counter+=1
+            
+        '''for i in range(0, len(classifications)):
+        	print(classifications[i])	 '''
+        
 
         # TODO: Classify the points above based on the labels given
 
