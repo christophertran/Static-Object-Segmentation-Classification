@@ -196,10 +196,10 @@ class SegmentationNode(Node):
             # Items needed to create BoundingBox3DArray
             bbox = vision_msgs.BoundingBox3D(center=center, size=size)
             
-            if (o3d_bbox.volume() < 1):
+            ''' if (o3d_bbox.volume() < 1):
             	#print("volume: ", o3d_bbox.volume())
             	print("center: ", o3d_bbox.get_center())
-            	#print(o3d_bbox) 
+            	#print(o3d_bbox) '''
           
             self.bboxs.append(bbox)
             classifications.append([bbox])
@@ -214,8 +214,8 @@ class SegmentationNode(Node):
             
             counter+=1
             
-        '''for i in range(0, len(classifications)):
-        	print(classifications[i])	 '''
+        for i in range(0, len(classifications)):
+        	print(classifications[i])	 
         
 
         # TODO: Classify the points above based on the labels given
