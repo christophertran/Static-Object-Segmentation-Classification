@@ -196,10 +196,10 @@ class SegmentationNode(Node):
             # Items needed to create BoundingBox3DArray
             bbox = vision_msgs.BoundingBox3D(center=center, size=size)
             
-            ''' if (o3d_bbox.volume() > 10):
-            	print("volume: ", o3d_bbox.volume())
+            if (o3d_bbox.volume() < 1):
+            	#print("volume: ", o3d_bbox.volume())
             	print("center: ", o3d_bbox.get_center())
-            	print(o3d_bbox) '''
+            	#print(o3d_bbox) 
           
             self.bboxs.append(bbox)
             classifications.append([bbox])
@@ -207,6 +207,11 @@ class SegmentationNode(Node):
             # car > 10 volume
             if (o3d_bbox.volume() > 10):
             	classifications[counter].append("car")
+            	
+            # walker < 1 volume and y value < 25
+            if (o3d_bbox.volume() < 1 and o3d_bbox.get_center()[1] < 25):
+            	classifications[counter].append("walker")
+            
             counter+=1
             
         '''for i in range(0, len(classifications)):
@@ -232,8 +237,9 @@ class SegmentationNode(Node):
         self.vis.add_geometry(self.o3d_pcd)
 
         # Draw bounding boxes
-        for o3d_bbox in self.o3d_bboxs:
-            self.vis.add_geometry(o3d_bbox)
+        for o3d_bbox in self.o3d_bboxs:        
+
+        	self.vis.add_geometry(o3d_bbox)
 
         # Move viewpoint camera
         self.view_control.set_front(viewcontrol_front)
