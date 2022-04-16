@@ -197,6 +197,12 @@ class SegmentationNode(Node):
             self.bboxs.append(bbox)
 
         # TODO: Classify the points above based on the labels given
+        for bbox in self.bboxs:
+            w = bbox.size().x
+            h = bbox.size().y
+
+            # TODO: Assign appropriate thresholds for classification
+            # w and h are in meters
 
         # TODO: Find a way to classify and then pass on the message to be visualized by rviz2
 
