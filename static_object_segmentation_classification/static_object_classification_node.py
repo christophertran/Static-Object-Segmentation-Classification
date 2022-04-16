@@ -215,8 +215,6 @@ class SegmentationNode(Node):
                 print("Classified Street Sign")
             if (height > 1.3 and height < 2.0 and width > 1.4 and width < 1.9):
                 print("Classified Car")
-            else:
-                print(".")
 
         # TODO: Find a way to classify and then pass on the message to be visualized by rviz2
 
