@@ -203,8 +203,8 @@ class SegmentationNode(Node):
 
             # TODO: Assign appropriate thresholds for classification
             # w and h are in meters
-            # Cars:
-            # People: [Average shoulder width: .5m] [Average range in height: 1.2m(4ft) - 2.1m(7ft)]
+            # Cars: [Average range in width: 1.4m-1.9m] [Average range in height: 1.3m-2.0m]
+            # People: [Average range in shoulder width: 0.3m-0.6m] [Average range in height: 1.2m(4ft) - 2.1m(7ft)]
             # Traffic Lights:
             # Street Signs: 
 
