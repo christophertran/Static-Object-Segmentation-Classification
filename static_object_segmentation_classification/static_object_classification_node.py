@@ -207,6 +207,13 @@ class SegmentationNode(Node):
             # People: [Average range in shoulder width: 0.3m-0.6m] [Average range in height: 1.2m(4ft) - 2.1m(7ft)]
             # Traffic Lights: [1m-1.4m x 0.25-0.45m]
             # Street Signs: [1.0m-1.8m x 1.0m-1.8m]
+            if(width < .9):
+                print("Classified Human")
+            else:
+                if height < .6:
+                    print("Classified Traffic light")
+                else:
+                    print(".")
 
         # TODO: Find a way to classify and then pass on the message to be visualized by rviz2
 
