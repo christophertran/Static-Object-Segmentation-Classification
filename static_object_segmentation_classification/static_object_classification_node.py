@@ -203,6 +203,10 @@ class SegmentationNode(Node):
 
             # TODO: Assign appropriate thresholds for classification
             # w and h are in meters
+            # Cars:
+            # People: [Average shoulder width: .5m] [Average range in height: 1.2m(4ft) - 2.1m(7ft)]
+            # Traffic Lights:
+            # Street Signs: 
 
         # TODO: Find a way to classify and then pass on the message to be visualized by rviz2
 
