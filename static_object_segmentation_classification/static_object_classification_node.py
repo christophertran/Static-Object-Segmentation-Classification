@@ -219,6 +219,16 @@ class SegmentationNode(Node):
         
 
         # TODO: Classify the points above based on the labels given
+        for bbox in self.bboxs:
+            w = bbox.size().x
+            h = bbox.size().y
+
+            # TODO: Assign appropriate thresholds for classification
+            # w and h are in meters
+            # Cars: [Average range in width: 1.4m-1.9m] [Average range in height: 1.3m-2.0m]
+            # People: [Average range in shoulder width: 0.3m-0.6m] [Average range in height: 1.2m(4ft) - 2.1m(7ft)]
+            # Traffic Lights: [1m-1.4m x 0.25-0.45m]
+            # Street Signs: [1.0m-1.8m x 1.0m-1.8m]
 
         # TODO: Find a way to classify and then pass on the message to be visualized by rviz2
 
