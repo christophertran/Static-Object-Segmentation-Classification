@@ -219,9 +219,9 @@ class SegmentationNode(Node):
         
 
         # TODO: Classify the points above based on the labels given
-        for bbox in self.bboxs:
-            w = bbox.size().x
-            h = bbox.size().y
+        #for bbox in self.bboxs:
+            #w = bbox.size().x
+            #h = bbox.size().y
 
             # TODO: Assign appropriate thresholds for classification
             # w and h are in meters
