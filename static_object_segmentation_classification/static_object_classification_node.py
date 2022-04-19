@@ -196,10 +196,9 @@ class SegmentationNode(Node):
 
             self.bboxs.append(bbox)
 
-        # TODO: Classify the points above based on the labels given
-        for bbox in self.bboxs:
-            w = bbox.size().x
-            h = bbox.size().y
+            # Classification:
+            width = x3
+            height = y3
 
             # TODO: Assign appropriate thresholds for classification
             # w and h are in meters
@@ -216,7 +215,7 @@ class SegmentationNode(Node):
             if (height > 1.3 and height < 2.0 and width > 1.4 and width < 1.9):
                 print("Classified Car")
 
-        # TODO: Find a way to classify and then pass on the message to be visualized by rviz2
+            # TODO: Find a way to pass on the classification to be visualized by rviz2
 
         # Convert the numpy array to a open3d PointCloud
         self.o3d_pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
