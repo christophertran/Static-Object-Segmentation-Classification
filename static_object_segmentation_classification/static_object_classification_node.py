@@ -208,12 +208,14 @@ class SegmentationNode(Node):
             # Cars: [Average range in width: 1.4m-1.9m] [Average range in height: 1.3m-2.0m]
             if(height > 1.2 and height < 2.1 and width > 0.3 and width < 0.9):
                 print("Classified Human")
-            if (height > 1.0 and height < 1.4 and width > 0.25 and width < 0.45):
+            elif (height > 1.0 and height < 1.4 and width > 0.25 and width < 0.45):
                 print("Classified Traffic light")
-            if (height > 1.0 and height < 1.8 and width > 1.0 and width < 1.8):
+            elif (height > 1.0 and height < 1.8 and width > 1.0 and width < 1.8):
                 print("Classified Street Sign")
-            if (height > 1.3 and height < 2.0 and width > 1.4 and width < 1.9):
+            elif (height > 1.3 and height < 2.0 and width > 1.4 and width < 1.9):
                 print("Classified Car")
+            else:
+                print("Other Classification")
 
             # TODO: Find a way to pass on the classification to be visualized by rviz2
 
