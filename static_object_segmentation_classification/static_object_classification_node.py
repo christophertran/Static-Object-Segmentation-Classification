@@ -72,11 +72,11 @@ class SegmentationNode(Node):
         viewcontrol_lookat = [
             6,
             60,
-            .6,
+            0.6,
         ]
         # viewcontrol_up defines the up vector of the visualizer
         viewcontrol_up = [
-            .2,
+            0.2,
             1,
             1,
         ]
@@ -206,13 +206,13 @@ class SegmentationNode(Node):
             # Traffic Lights: [1m-1.4m x 0.25-0.45m]
             # Street Signs: [1.0m-1.8m x 1.0m-1.8m]
             # Cars: [Average range in width: 1.4m-1.9m] [Average range in height: 1.3m-2.0m]
-            if(height > 1.2 and height < 2.1 and width > 0.3 and width < 0.9):
+            if (1.2 < height < 2.1) and (0.3 < width < 0.9):
                 print("Classified Human")
-            elif (height > 1.0 and height < 1.4 and width > 0.25 and width < 0.45):
+            elif (1.0 < height < 1.4) and (0.25 < width < 0.45):
                 print("Classified Traffic light")
-            elif (height > 1.0 and height < 1.8 and width > 1.0 and width < 1.8):
+            elif (1.0 < height < 1.8) and (1.0 < width < 1.8):
                 print("Classified Street Sign")
-            elif (height > 1.3 and height < 2.0 and width > 1.4 and width < 1.9):
+            elif (1.3 < height < 2.0) and (1.4 < width < 1.9):
                 print("Classified Car")
             else:
                 print("Other Classification")
