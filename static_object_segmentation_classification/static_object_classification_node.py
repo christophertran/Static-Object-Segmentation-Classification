@@ -222,19 +222,27 @@ class SegmentationNode(Node):
             if (1.2 < height < 2.1) and (0.3 < width < 0.9):
                 for point in points:
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        # reset label for each point to 1
+                        # reset label for each point to 1 using:
+                        # dictionary[1] = dictionary[current_label of point]
+                        # del dictionary[current_label of point] ?
             elif (1.0 < height < 1.4) and (0.25 < width < 0.45):
                 for point in points:
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        # reset label for each point to 2
+                        # reset label for each point to 2 using:
+                        # dictionary[2] = dictionary[current_label of point]
+                        # del dictionary[current_label of point] ?
             elif (1.0 < height < 1.8) and (1.0 < width < 1.8):
                 for point in points:
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        # reset label for each point to 3
+                        # reset label for each point to 3 using:
+                        # dictionary[3] = dictionary[current_label of point]
+                        # del dictionary[current_label of point] ?
             elif (1.3 < height < 2.0) and (1.4 < width < 1.9):
                 for point in points:
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        # reset label for each point to 4
+                        # reset label for each point to 4 using:
+                        # dictionary[4] = dictionary[current_label of point]
+                        # del dictionary[current_label of point] ?
             else:
                 print("Other Classification")
             
