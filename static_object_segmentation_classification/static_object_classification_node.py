@@ -95,8 +95,6 @@ class SegmentationNode(Node):
         # Each label is either -1 for noise, or [0, n] where each
         # point is related to a specific cluster of points.
         labels = points_and_labels[:, 3:].flatten()
-        for x in labels:
-        	x = 1
         	
         dictionary = defaultdict(list)
         for key, value in zip(labels, points):
@@ -163,6 +161,8 @@ class SegmentationNode(Node):
         """
 
         # TODO: Complete this loop to create a vision_msgs/BoundingBox3DArray
+        for i in range(len(labels)):
+            labels[i] = -1
 
         self.bboxs = []
         for o3d_bbox in self.o3d_bboxs:
@@ -202,8 +202,6 @@ class SegmentationNode(Node):
             width = x3
             height = y3
 
-            # classification = -1
-            
             # Finding constraints for bounding box, since we only had center and size before
             xmin = x1 - x3/2
             xmax = x1 + x3/2
@@ -217,65 +215,46 @@ class SegmentationNode(Node):
             # Human: [1.2m-2.1m x 0.3m-0.9m]
             # Traffic Lights: [1m-1.4m x 0.25-0.45m]
             # Street Signs: [1.0m-1.8m x 1.0m-1.8m]
-            # Cars: [Average range in width: 1.4m-1.9m] [Average range in height: 1.3m-2.0m]
-            
+            # Cars: [Average range in width: 1.4m-1.9m] [Average range in height: 1.3m-2.0m] 
             if (1.2 < height < 2.1) and (0.3 < width < 0.9):
+                i = 0
                 for point in points:
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        # reset label for each point to 1 using:
-                        # dictionary[1] = dictionary[current_label of point]
-                        # del dictionary[current_label of point] ?
+                        labels[i] = 1
+                    i += 1
+
             elif (1.0 < height < 1.4) and (0.25 < width < 0.45):
                 for point in points:
+                    i = 0
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        # reset label for each point to 2 using:
-                        # dictionary[2] = dictionary[current_label of point]
-                        # del dictionary[current_label of point] ?
+                        labels[i] = 2
+                    i += 1
+                        
             elif (1.0 < height < 1.8) and (1.0 < width < 1.8):
+                i = 0
                 for point in points:
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        # reset label for each point to 3 using:
-                        # dictionary[3] = dictionary[current_label of point]
-                        # del dictionary[current_label of point] ?
+                        labels[i] = 3
+                    i += 1	
+            			
             elif (1.3 < height < 2.0) and (1.4 < width < 1.9):
+                i = 0
                 for point in points:
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        # reset label for each point to 4 using:
-                        # dictionary[4] = dictionary[current_label of point]
-                        # del dictionary[current_label of point] ?
-            else:
-                print("Other Classification")
-            
-#             label_list = list(dictionary.keys())
-#             point_list = list(dictionary.values())
-            
-#             for point in points:
-#             	xmin = x1 - x3/2
-#             	xmax = x1 + x3/2
-#             	ymin = y1 - y3/2
-#             	ymax = y1 + y3/2
-#             	zmin = z1 - z3/2
-#             	zmax = z1 + z3/2
-            	
-#             	if(xmin <= point[0] <= xmax):	
-#             		if( ymin <= point[1] <= ymax):	
-#             			if(zmin <= point[2] <= zmax):
-#             				if(classification >= 0):
-#             					print(".")	
-#             					for label, tmp_point in dictionary.items():
-#             						if point == tmp_point:
-#             							print(f"Label: {label}")
-            					
+                        labels[i] = 4
+                    i += 1				
             
         # Convert the numpy array to a open3d PointCloud
         self.o3d_pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
+
+        
 
         # Apply different colors to clusters
         max_label = labels.max()
         print(f"point cloud has {int(max_label + 1)} clusters")
         colors = plt.get_cmap("tab20")(labels / (max_label if max_label > 0 else 1))
-        colors[labels = 0] = 0
-        colors[labels >= 0] = 0
+        colors[labels < 0] = 0
+        # colors[labels >= 0] = 0
         self.o3d_pcd.colors = o3d.utility.Vector3dVector(colors[:, :3])
 
         # This is for visualization of the received point cloud.
@@ -303,7 +282,6 @@ class SegmentationNode(Node):
         self.pcd_publisher.publish(
             vision_msgs.BoundingBox3DArray(header=header, boxes=self.bboxs)
         )
-
 
 """
 Serialization of sensor_msgs.PointCloud2 messages.
