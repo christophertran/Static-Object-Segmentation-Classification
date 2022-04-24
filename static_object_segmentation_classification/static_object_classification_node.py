@@ -269,7 +269,11 @@ class SegmentationNode(Node):
             
         # Convert the numpy array to a open3d PointCloud
         self.o3d_pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
-
+        
+        for x in labels:
+            print(x)
+            x = -1
+            
         # Apply different colors to clusters
         max_label = labels.max()
         print(f"point cloud has {int(max_label + 1)} clusters")
