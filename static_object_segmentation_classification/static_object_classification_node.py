@@ -40,6 +40,8 @@ class SegmentationNode(Node):
 
         self.bboxs = []
 
+        self.classRes = []
+
         # Set up a subscription to the SUB_TOPIC topic with a
         # callback to the function 'listener_callback'
         self.pcd_subscriber = self.create_subscription(
@@ -48,7 +50,7 @@ class SegmentationNode(Node):
             self.listener_callback,  # Function to call
             10,  # QoS
         )
-
+        
         # Set up a publisher to the PUB_TOPIC topic
         # with a callback to the function 'timer_callback'
         self.pcd_publisher = self.create_publisher(
@@ -56,6 +58,15 @@ class SegmentationNode(Node):
             PUB_TOPIC,  # topic
             10,  # QoS
         )
+
+        # Set up a publisher to the PUB_TOPIC topic
+        # with a callback to the function 'timer_callback'
+        self.class_publisher = self.create_publisher(
+            vision_msgs.Classification,  # Msg type
+            PUB_TOPIC,  # topic
+            10,  # QoS
+        )
+
 
         timer_period = 1 / 10  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
@@ -165,7 +176,9 @@ class SegmentationNode(Node):
             labels[i] = -1
 
         self.bboxs = []
+        self.classRes = []
         for o3d_bbox in self.o3d_bboxs:
+
             # Items needed to create Point
             o3d_bbox_center = o3d_bbox.get_center()
             x1, y1, z1 = o3d_bbox_center[0], o3d_bbox_center[1], o3d_bbox_center[2]
@@ -221,6 +234,10 @@ class SegmentationNode(Node):
                 for point in points:
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
                         labels[i] = 1
+
+                        # creating ObjectHypothesis needed for classification message
+                        objHyp = vision_msgs.ObjectHypothesis(class_id="1", score=.5)
+                        self.classRes.append(objHyp)
                     i += 1
 
             elif (1.0 < height < 1.4) and (0.25 < width < 0.45):
@@ -228,6 +245,10 @@ class SegmentationNode(Node):
                     i = 0
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
                         labels[i] = 2
+
+                        # creating ObjectHypothesis needed for classification message                        
+                        objHyp = vision_msgs.ObjectHypothesis(class_id="2", score=.5)      
+                        self.classRes.append(objHyp)                  
                     i += 1
                         
             elif (1.0 < height < 1.8) and (1.0 < width < 1.8):
@@ -235,6 +256,10 @@ class SegmentationNode(Node):
                 for point in points:
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
                         labels[i] = 3
+
+                        # creating ObjectHypothesis needed for classification message
+                        objHyp = vision_msgs.ObjectHypothesis(class_id="3", score=.5)      
+                        self.classRes.append(objHyp)       
                     i += 1	
             			
             elif (1.3 < height < 2.0) and (1.4 < width < 1.9):
@@ -242,6 +267,10 @@ class SegmentationNode(Node):
                 for point in points:
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
                         labels[i] = 4
+
+                        # creating ObjectHypothesis needed for classification message
+                        objHyp = vision_msgs.ObjectHypothesis(class_id="4", score=.5)      
+                        self.classRes.append(objHyp)       
                     i += 1				
             
         # Convert the numpy array to a open3d PointCloud
@@ -252,7 +281,7 @@ class SegmentationNode(Node):
         print(f"point cloud has {int(max_label + 1)} clusters")
         colors = plt.get_cmap("tab20")(labels / (max_label if max_label > 0 else 1))
         colors[labels < 0] = 0
-        # colors[labels >= 0] = 0
+        # colors[labels > 1] = 0
         self.o3d_pcd.colors = o3d.utility.Vector3dVector(colors[:, :3])
 
         # This is for visualization of the received point cloud.
@@ -281,6 +310,16 @@ class SegmentationNode(Node):
             vision_msgs.BoundingBox3DArray(header=header, boxes=self.bboxs)
         )
 
+        self.class_publisher.publish(
+            vision_msgs.Classification(header=header, results=self.classRes)
+        )
+
+        # PoseWCovariance = geometry_msgs.PoseWithCovariance(pose=center)
+        # ObjHypWPose = vision_msgs.ObjectHypothesisWithPose(id=10, score=.8, pose=PoseWCovariance)
+        # detection = vision_msgs.Detection3D(header=header, results=ObjHypWPose, bbox=bbox, source_cloud=msg)
+        # self.detections.append(detection)
+        # boxClassification = vision_msgs.Classification(header=header, results=self.classRes)
+        
 """
 Serialization of sensor_msgs.PointCloud2 messages.
 Author: Tim Field
