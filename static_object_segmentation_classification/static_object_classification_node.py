@@ -39,7 +39,7 @@ class SegmentationNode(Node):
         self.o3d_bboxs = []
 
         self.bboxs = []
-
+        
         self.detections = []
 
         # Set up a subscription to the SUB_TOPIC topic with a
@@ -176,6 +176,7 @@ class SegmentationNode(Node):
             labels[i] = -1
 
         self.bboxs = []
+        
         self.detections = []
         for o3d_bbox in self.o3d_bboxs:
 
@@ -276,7 +277,7 @@ class SegmentationNode(Node):
                 
                 detection = vision_msgs.Detection3D(header=header, results=res, bbox=bbox, id="tmp")
                 self.detections.append(detection)
-            
+                
         # Convert the numpy array to a open3d PointCloud
         self.o3d_pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
 
@@ -292,8 +293,9 @@ class SegmentationNode(Node):
         self.vis.add_geometry(self.o3d_pcd)
 
         # Draw bounding boxes
-        for o3d_bbox in self.o3d_bboxs:
-            self.vis.add_geometry(o3d_bbox)
+        for o3d_bbox in self.o3d_bboxs:        
+
+        	self.vis.add_geometry(o3d_bbox)
 
         # Move viewpoint camera
         self.view_control.set_front(viewcontrol_front)
