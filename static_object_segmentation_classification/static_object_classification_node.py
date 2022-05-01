@@ -40,6 +40,8 @@ class SegmentationNode(Node):
 
         self.bboxs = []
         
+        self.detections = []
+
         # Set up a subscription to the SUB_TOPIC topic with a
         # callback to the function 'listener_callback'
         self.pcd_subscriber = self.create_subscription(
@@ -48,7 +50,7 @@ class SegmentationNode(Node):
             self.listener_callback,  # Function to call
             10,  # QoS
         )
-
+        
         # Set up a publisher to the PUB_TOPIC topic
         # with a callback to the function 'timer_callback'
         self.pcd_publisher = self.create_publisher(
@@ -56,6 +58,15 @@ class SegmentationNode(Node):
             PUB_TOPIC,  # topic
             10,  # QoS
         )
+
+        # Set up a publisher to the PUB_TOPIC topic
+        # with a callback to the function 'timer_callback'
+        self.detection_publisher = self.create_publisher(
+            vision_msgs.Detection3DArray,  # Msg type
+            PUB_TOPIC,  # topic
+            10,  # QoS
+        )
+
 
         timer_period = 1 / 10  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
@@ -72,11 +83,11 @@ class SegmentationNode(Node):
         viewcontrol_lookat = [
             6,
             60,
-            .6,
+            0.6,
         ]
         # viewcontrol_up defines the up vector of the visualizer
         viewcontrol_up = [
-            .2,
+            0.2,
             1,
             1,
         ]
@@ -95,7 +106,7 @@ class SegmentationNode(Node):
         # Each label is either -1 for noise, or [0, n] where each
         # point is related to a specific cluster of points.
         labels = points_and_labels[:, 3:].flatten()
-
+        	
         dictionary = defaultdict(list)
         for key, value in zip(labels, points):
             dictionary[key].append(value)
@@ -161,10 +172,14 @@ class SegmentationNode(Node):
         """
 
         # TODO: Complete this loop to create a vision_msgs/BoundingBox3DArray
+        for i in range(len(labels)):
+            labels[i] = -1
 
         self.bboxs = []
-
+        
+        self.detections = []
         for o3d_bbox in self.o3d_bboxs:
+
             # Items needed to create Point
             o3d_bbox_center = o3d_bbox.get_center()
             x1, y1, z1 = o3d_bbox_center[0], o3d_bbox_center[1], o3d_bbox_center[2]
@@ -195,12 +210,74 @@ class SegmentationNode(Node):
             # Items needed to create BoundingBox3DArray
             bbox = vision_msgs.BoundingBox3D(center=center, size=size)
 
-            self.bboxs.append(bbox)
+            self.bboxs.append(bbox)   
+            
+            # Classification:
+            width = x3
+            height = y3
 
-        # TODO: Classify the points above based on the labels given
+            # Finding constraints for bounding box, since we only had center and size before
+            xmin = x1 - x3/2
+            xmax = x1 + x3/2
+            ymin = y1 - y3/2
+            ymax = y1 + y3/2
+            zmin = z1 - z3/2
+            zmax = z1 + z3/2
+            				
+            # TODO: Assign appropriate thresholds for classification
+            # w and h are in meters
+            # Human: [1.2m-2.1m x 0.3m-0.9m]
+            # Traffic Lights: [1m-1.4m x 0.25-0.45m]
+            # Street Signs: [1.0m-1.8m x 1.0m-1.8m]
+            # Cars: [Average range in width: 1.4m-1.9m] [Average range in height: 1.3m-2.0m]
+            classifications = [] 
+            if (1.2 < height < 2.1) and (0.3 < width < 0.9):
+                i = 0
+                for point in points:
+                    if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
+                        labels[i] = 1
+                        classifications.append("Human")
+                    i += 1
 
-        # TODO: Find a way to classify and then pass on the message to be visualized by rviz2
+            if (1.0 < height < 1.4) and (0.25 < width < 0.45):
+                for point in points:
+                    i = 0
+                    if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
+                        labels[i] = 2    
+                        classifications.append("Traffic Light")         
+                    i += 1
+                        
+            if (1.0 < height < 1.8) and (1.0 < width < 1.8):
+                i = 0
+                for point in points:
+                    if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
+                        labels[i] = 3   
+                        classifications.append("Street Sign")
+                    i += 1	
+            			
+            if (1.3 < height < 2.0) and (1.4 < width < 1.9):
+                i = 0
+                for point in points:
+                    if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
+                        labels[i] = 4    
+                        classifications.append("Car")
+                    i += 1		
+            
+            if(len(classifications) > 0):
+                # creating Detection3D visions msg
+                header = std_msgs.Header(frame_id="map")
+                cov = [0]*36
+                PoseWCovariance = geometry_msgs.PoseWithCovariance(pose=center, covariance=cov)
+                res = []
 
+                for x in classifications:
+                    objHyp = vision_msgs.ObjectHypothesis(class_id= x, score= 1 / len(classifications))
+                    objHypWPose = vision_msgs.ObjectHypothesisWithPose(hypothesis=objHyp, pose=PoseWCovariance)
+                    res.append(objHypWPose)
+                
+                detection = vision_msgs.Detection3D(header=header, results=res, bbox=bbox, id="tmp")
+                self.detections.append(detection)
+                
         # Convert the numpy array to a open3d PointCloud
         self.o3d_pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
 
@@ -238,7 +315,11 @@ class SegmentationNode(Node):
             vision_msgs.BoundingBox3DArray(header=header, boxes=self.bboxs)
         )
 
+        self.detection_publisher.publish(
+            vision_msgs.Detection3DArray(header=header, detections=self.detections)
+        )
 
+        
 """
 Serialization of sensor_msgs.PointCloud2 messages.
 Author: Tim Field
