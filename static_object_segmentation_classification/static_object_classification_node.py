@@ -40,7 +40,7 @@ class SegmentationNode(Node):
 
         self.bboxs = []
 
-        self.classRes = []
+        self.detections = []
 
         # Set up a subscription to the SUB_TOPIC topic with a
         # callback to the function 'listener_callback'
@@ -61,8 +61,8 @@ class SegmentationNode(Node):
 
         # Set up a publisher to the PUB_TOPIC topic
         # with a callback to the function 'timer_callback'
-        self.class_publisher = self.create_publisher(
-            vision_msgs.Classification,  # Msg type
+        self.detection_publisher = self.create_publisher(
+            vision_msgs.Detection3DArray,  # Msg type
             PUB_TOPIC,  # topic
             10,  # QoS
         )
@@ -176,7 +176,7 @@ class SegmentationNode(Node):
             labels[i] = -1
 
         self.bboxs = []
-        self.classRes = []
+        self.detections = []
         for o3d_bbox in self.o3d_bboxs:
 
             # Items needed to create Point
@@ -209,7 +209,7 @@ class SegmentationNode(Node):
             # Items needed to create BoundingBox3DArray
             bbox = vision_msgs.BoundingBox3D(center=center, size=size)
 
-            self.bboxs.append(bbox)
+            self.bboxs.append(bbox)   
             
             # Classification:
             width = x3
@@ -228,50 +228,54 @@ class SegmentationNode(Node):
             # Human: [1.2m-2.1m x 0.3m-0.9m]
             # Traffic Lights: [1m-1.4m x 0.25-0.45m]
             # Street Signs: [1.0m-1.8m x 1.0m-1.8m]
-            # Cars: [Average range in width: 1.4m-1.9m] [Average range in height: 1.3m-2.0m] 
+            # Cars: [Average range in width: 1.4m-1.9m] [Average range in height: 1.3m-2.0m]
+            classifications = [] 
             if (1.2 < height < 2.1) and (0.3 < width < 0.9):
                 i = 0
                 for point in points:
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
                         labels[i] = 1
-
-                        # creating ObjectHypothesis needed for classification message
-                        objHyp = vision_msgs.ObjectHypothesis(class_id="1", score=.5)
-                        self.classRes.append(objHyp)
+                        classifications.append("Human")
                     i += 1
 
-            elif (1.0 < height < 1.4) and (0.25 < width < 0.45):
+            if (1.0 < height < 1.4) and (0.25 < width < 0.45):
                 for point in points:
                     i = 0
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        labels[i] = 2
-
-                        # creating ObjectHypothesis needed for classification message                        
-                        objHyp = vision_msgs.ObjectHypothesis(class_id="2", score=.5)      
-                        self.classRes.append(objHyp)                  
+                        labels[i] = 2    
+                        classifications.append("Traffic Light")         
                     i += 1
                         
-            elif (1.0 < height < 1.8) and (1.0 < width < 1.8):
+            if (1.0 < height < 1.8) and (1.0 < width < 1.8):
                 i = 0
                 for point in points:
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        labels[i] = 3
-
-                        # creating ObjectHypothesis needed for classification message
-                        objHyp = vision_msgs.ObjectHypothesis(class_id="3", score=.5)      
-                        self.classRes.append(objHyp)       
+                        labels[i] = 3   
+                        classifications.append("Street Sign")
                     i += 1	
             			
-            elif (1.3 < height < 2.0) and (1.4 < width < 1.9):
+            if (1.3 < height < 2.0) and (1.4 < width < 1.9):
                 i = 0
                 for point in points:
                     if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        labels[i] = 4
+                        labels[i] = 4    
+                        classifications.append("Car")
+                    i += 1		
+            
+            if(len(classifications) > 0):
+                # creating Detection3D visions msg
+                header = std_msgs.Header(frame_id="map")
+                cov = [0]*36
+                PoseWCovariance = geometry_msgs.PoseWithCovariance(pose=center, covariance=cov)
+                res = []
 
-                        # creating ObjectHypothesis needed for classification message
-                        objHyp = vision_msgs.ObjectHypothesis(class_id="4", score=.5)      
-                        self.classRes.append(objHyp)       
-                    i += 1				
+                for x in classifications:
+                    objHyp = vision_msgs.ObjectHypothesis(class_id= x, score= 1 / len(classifications))
+                    objHypWPose = vision_msgs.ObjectHypothesisWithPose(hypothesis=objHyp, pose=PoseWCovariance)
+                    res.append(objHypWPose)
+                
+                detection = vision_msgs.Detection3D(header=header, results=res, bbox=bbox, id="tmp")
+                self.detections.append(detection)
             
         # Convert the numpy array to a open3d PointCloud
         self.o3d_pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
@@ -281,7 +285,6 @@ class SegmentationNode(Node):
         print(f"point cloud has {int(max_label + 1)} clusters")
         colors = plt.get_cmap("tab20")(labels / (max_label if max_label > 0 else 1))
         colors[labels < 0] = 0
-        # colors[labels > 1] = 0
         self.o3d_pcd.colors = o3d.utility.Vector3dVector(colors[:, :3])
 
         # This is for visualization of the received point cloud.
@@ -310,15 +313,10 @@ class SegmentationNode(Node):
             vision_msgs.BoundingBox3DArray(header=header, boxes=self.bboxs)
         )
 
-        self.class_publisher.publish(
-            vision_msgs.Classification(header=header, results=self.classRes)
+        self.detection_publisher.publish(
+            vision_msgs.Detection3DArray(header=header, detections=self.detections)
         )
 
-        # PoseWCovariance = geometry_msgs.PoseWithCovariance(pose=center)
-        # ObjHypWPose = vision_msgs.ObjectHypothesisWithPose(id=10, score=.8, pose=PoseWCovariance)
-        # detection = vision_msgs.Detection3D(header=header, results=ObjHypWPose, bbox=bbox, source_cloud=msg)
-        # self.detections.append(detection)
-        # boxClassification = vision_msgs.Classification(header=header, results=self.classRes)
         
 """
 Serialization of sensor_msgs.PointCloud2 messages.
