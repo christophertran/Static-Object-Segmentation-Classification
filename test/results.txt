@@ -1,18 +1,4 @@
-==========
-Total Predictions Correctness
-Incorrect: 755
-Correct: 902
-Total Predictions: 1657
-Accuracy: 0.544357272178636
-==========
-==========
-Total Predictions Correctness
-Incorrect: 486
-Correct: 919
-Total Predictions: 1405
-Accuracy: 0.6540925266903914
-==========
-
+2022-02-17-18-06-21
 ==========
 Total Predictions Correctness
 Incorrect: 754
@@ -20,6 +6,8 @@ Correct: 194
 Total Predictions: 948
 Accuracy: 0.20464135021097046
 ==========
+
+2022-02-17-18-13-23
 ==========
 Total Predictions Correctness
 Incorrect: 484
