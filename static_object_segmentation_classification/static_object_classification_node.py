@@ -1,5 +1,4 @@
 import sys
-import os
 
 import rclpy
 from rclpy.node import Node
@@ -11,13 +10,16 @@ import geometry_msgs.msg as geometry_msgs
 import numpy as np
 import pyquaternion as pyq
 import open3d as o3d
-import matplotlib.pyplot as plt
 
-from collections import defaultdict
+import collections
 
 SUB_TOPIC = "static_object_segmentation_node/labels"
 
 PUB_TOPIC = "static_object_classification_node/bounding_boxes"
+
+# Mininmum number of points for us to put a bounding box around them
+# Must be >= 4
+MIN_POINTS = 20
 
 
 class SegmentationNode(Node):
@@ -36,11 +38,9 @@ class SegmentationNode(Node):
         self.pcd_as_numpy_array = np.asarray([])
         self.o3d_pcd = o3d.geometry.PointCloud()
 
-        self.o3d_bboxs = []
-
-        self.bboxs = []
-        
         self.detections = []
+
+        self.frame_count = 0
 
         # Set up a subscription to the SUB_TOPIC topic with a
         # callback to the function 'listener_callback'
@@ -50,23 +50,13 @@ class SegmentationNode(Node):
             self.listener_callback,  # Function to call
             10,  # QoS
         )
-        
-        # Set up a publisher to the PUB_TOPIC topic
-        # with a callback to the function 'timer_callback'
-        self.pcd_publisher = self.create_publisher(
-            vision_msgs.BoundingBox3DArray,  # Msg type
-            PUB_TOPIC,  # topic
-            10,  # QoS
-        )
 
         # Set up a publisher to the PUB_TOPIC topic
-        # with a callback to the function 'timer_callback'
         self.detection_publisher = self.create_publisher(
             vision_msgs.Detection3DArray,  # Msg type
             PUB_TOPIC,  # topic
             10,  # QoS
         )
-
 
         timer_period = 1 / 10  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
@@ -99,6 +89,9 @@ class SegmentationNode(Node):
             list(read_points(msg, field_names=["x", "y", "z", "label"]))
         )
 
+        if len(points_and_labels) == 0:
+            return
+
         # ["x", "y", "z"] point cloud coordinates
         points = points_and_labels[:, :3]
 
@@ -106,79 +99,35 @@ class SegmentationNode(Node):
         # Each label is either -1 for noise, or [0, n] where each
         # point is related to a specific cluster of points.
         labels = points_and_labels[:, 3:].flatten()
-        	
-        dictionary = defaultdict(list)
+
+        dictionary = collections.defaultdict(list)
         for key, value in zip(labels, points):
             dictionary[key].append(value)
 
-        self.o3d_bboxs = []
+        o3d_bboxs = []
         for key in dictionary:
             dictionary[key] = np.asarray(dictionary[key])
 
             # Must have more than 4 points (rows) to create a bounding box
-            if dictionary[key].shape[0] >= 20:
-                self.o3d_bboxs.append(
+            if dictionary[key].shape[0] >= MIN_POINTS:
+                o3d_bboxs.append(
                     o3d.geometry.AxisAlignedBoundingBox().create_from_points(
                         o3d.utility.Vector3dVector(dictionary[key])
                     )
                 )
 
-        """
-        vision_msgs/BoundingBox3DArray.msg
-            std_msgs/Header header
-            vision_msgs/BoundingBox3D[] boxes
+        labels = [-1 for _ in range(len(labels))]
 
-        vision_msgs/BoundingBox3D.msg
-            # A 3D bounding box that can be positioned and rotated about its center (6 DOF)
-            # Dimensions of this box are in meters, and as such, it may be migrated to
-            #   another package, such as geometry_msgs, in the future.
+        # Convert the numpy array to a open3d PointCloud
+        self.o3d_pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
 
-            # The 3D position and orientation of the bounding box center
-            geometry_msgs/Pose center
-
-            # The size of the bounding box, in meters, surrounding the object's center
-            #   pose.
-            geometry_msgs/Vector3 size
-        
-        geometry_msgs/Pose.msg
-            # A representation of pose in free space, composed of position and orientation. 
-            Point position
-            Quaternion orientation
-
-        geometry_msgs/Vector3.msg
-            # This represents a vector in free space. 
-            # It is only meant to represent a direction. Therefore, it does not
-            # make sense to apply a translation to it (e.g., when applying a 
-            # generic rigid transformation to a Vector3, tf2 will only apply the
-            # rotation). If you want your data to be translatable too, use the
-            # geometry_msgs/Point message instead.
-
-            float64 x
-            float64 y
-            float64 z
-
-        geometry_msgs/Point.msg
-            # This contains the position of a point in free space
-            float64 x
-            float64 y
-            float64 z
-
-        geometry_msgs/Quaternion.msg
-            # This represents an orientation in free space in quaternion form.
-            float64 x
-            float64 y
-            float64 z
-            float64 w
-        """
-
-        # TODO: Complete this loop to create a vision_msgs/BoundingBox3DArray
-        for i in range(len(labels)):
-            labels[i] = -1
-
-        self.bboxs = []
-        
         self.detections = []
-        for o3d_bbox in self.o3d_bboxs:
+        for o3d_bbox in o3d_bboxs:
+            o3d_bbox_points = np.asarray(
+                self.o3d_pcd.select_by_index(
+                    o3d_bbox.get_point_indices_within_bounding_box(self.o3d_pcd.points)
+                ).points
+            )
 
             # Items needed to create Point
             o3d_bbox_center = o3d_bbox.get_center()
@@ -210,92 +159,105 @@ class SegmentationNode(Node):
             # Items needed to create BoundingBox3DArray
             bbox = vision_msgs.BoundingBox3D(center=center, size=size)
 
-            self.bboxs.append(bbox)   
-            
             # Classification:
             width = x3
             height = y3
 
-            # Finding constraints for bounding box, since we only had center and size before
-            xmin = x1 - x3/2
-            xmax = x1 + x3/2
-            ymin = y1 - y3/2
-            ymax = y1 + y3/2
-            zmin = z1 - z3/2
-            zmax = z1 + z3/2
-            				
             # TODO: Assign appropriate thresholds for classification
             # w and h are in meters
             # Human: [1.2m-2.1m x 0.3m-0.9m]
             # Traffic Lights: [1m-1.4m x 0.25-0.45m]
             # Street Signs: [1.0m-1.8m x 1.0m-1.8m]
             # Cars: [Average range in width: 1.4m-1.9m] [Average range in height: 1.3m-2.0m]
-            classifications = [] 
+            classifications = set()
             if (1.2 < height < 2.1) and (0.3 < width < 0.9):
-                i = 0
-                for point in points:
-                    if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
+                for i, point in enumerate(points):
+                    if point in o3d_bbox_points:
                         labels[i] = 1
-                        classifications.append("Human")
-                    i += 1
+                        classifications.add("Human")
 
             if (1.0 < height < 1.4) and (0.25 < width < 0.45):
-                for point in points:
-                    i = 0
-                    if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        labels[i] = 2    
-                        classifications.append("Traffic Light")         
-                    i += 1
-                        
+                for i, point in enumerate(points):
+                    if point in o3d_bbox_points:
+                        labels[i] = 2
+                        classifications.add("Traffic Light")
+
             if (1.0 < height < 1.8) and (1.0 < width < 1.8):
-                i = 0
-                for point in points:
-                    if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        labels[i] = 3   
-                        classifications.append("Street Sign")
-                    i += 1	
-            			
+                for i, point in enumerate(points):
+                    if point in o3d_bbox_points:
+                        labels[i] = 3
+                        classifications.add("Street Sign")
+
             if (1.3 < height < 2.0) and (1.4 < width < 1.9):
-                i = 0
-                for point in points:
-                    if (xmin <= point[0] <= xmax) and (ymin <= point[1] <= ymax) and (zmin <= point[2] <= zmax):
-                        labels[i] = 4    
-                        classifications.append("Car")
-                    i += 1		
-            
-            if(len(classifications) > 0):
+                for i, point in enumerate(points):
+                    if point in o3d_bbox_points:
+                        labels[i] = 4
+                        classifications.add("Car")
+
+            if len(classifications) > 0:
                 # creating Detection3D visions msg
                 header = std_msgs.Header(frame_id="map")
-                cov = [0]*36
-                PoseWCovariance = geometry_msgs.PoseWithCovariance(pose=center, covariance=cov)
+                cov = [0] * 36
+                PoseWCovariance = geometry_msgs.PoseWithCovariance(
+                    pose=center, covariance=cov
+                )
                 res = []
 
                 for x in classifications:
-                    objHyp = vision_msgs.ObjectHypothesis(class_id= x, score= 1 / len(classifications))
-                    objHypWPose = vision_msgs.ObjectHypothesisWithPose(hypothesis=objHyp, pose=PoseWCovariance)
+                    objHyp = vision_msgs.ObjectHypothesis(
+                        class_id=x, score=1 / len(classifications)
+                    )
+                    objHypWPose = vision_msgs.ObjectHypothesisWithPose(
+                        hypothesis=objHyp, pose=PoseWCovariance
+                    )
                     res.append(objHypWPose)
-                
-                detection = vision_msgs.Detection3D(header=header, results=res, bbox=bbox, id="tmp")
-                self.detections.append(detection)
-                
-        # Convert the numpy array to a open3d PointCloud
-        self.o3d_pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
 
-        # Apply different colors to clusters
-        max_label = labels.max()
-        print(f"point cloud has {int(max_label + 1)} clusters")
-        colors = plt.get_cmap("tab20")(labels / (max_label if max_label > 0 else 1))
-        colors[labels < 0] = 0
-        self.o3d_pcd.colors = o3d.utility.Vector3dVector(colors[:, :3])
+                detection = vision_msgs.Detection3D(
+                    header=header, results=res, bbox=bbox, id="tmp"
+                )
+                self.detections.append(detection)
+
+        colors = []
+        for label in labels:
+            if label == 1:
+                # Red = Human
+                colors.append([1, 0, 0])
+            elif label == 2:
+                # Green = Traffic Light
+                colors.append([0, 1, 0])
+            elif label == 3:
+                # Blue = Street Sign
+                colors.append([0, 0, 1])
+            elif label == 4:
+                # Other color = Car
+                colors.append([1, 0, 1])
+            else:
+                # Black = Don't care
+                colors.append([0, 0, 0])
+
+        self.frame_count += 1
+
+        print(str(self.frame_count) + ":")
+        counts = collections.Counter(
+            {"Human": 0, "Traffic Light": 0, "Street Sign": 0, "Car": 0}
+        )
+        for detection in self.detections:
+            for result in detection.results:
+                counts.update([result.hypothesis.class_id])
+
+        for k, v in counts.items():
+            print(k + "s:", v)
+        print("\n")
+
+        self.o3d_pcd.colors = o3d.utility.Vector3dVector(colors)
 
         # This is for visualization of the received point cloud.
         self.vis.clear_geometries()
         self.vis.add_geometry(self.o3d_pcd)
 
         # Draw bounding boxes
-        for o3d_bbox in self.o3d_bboxs:        
-
-        	self.vis.add_geometry(o3d_bbox)
+        for o3d_bbox in o3d_bboxs:
+            self.vis.add_geometry(o3d_bbox)
 
         # Move viewpoint camera
         self.view_control.set_front(viewcontrol_front)
@@ -307,19 +269,13 @@ class SegmentationNode(Node):
         self.vis.update_renderer()
 
     def timer_callback(self):
-        # TODO: Implement this callback function that will publish the final message with classifications
         header = std_msgs.Header(frame_id="map")
-
-        # This function has be modified to add a "label" field to the message
-        self.pcd_publisher.publish(
-            vision_msgs.BoundingBox3DArray(header=header, boxes=self.bboxs)
-        )
 
         self.detection_publisher.publish(
             vision_msgs.Detection3DArray(header=header, detections=self.detections)
         )
 
-        
+
 """
 Serialization of sensor_msgs.PointCloud2 messages.
 Author: Tim Field

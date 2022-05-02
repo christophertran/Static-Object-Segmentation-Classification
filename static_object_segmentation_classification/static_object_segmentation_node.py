@@ -81,6 +81,9 @@ class SegmentationNode(Node):
             )
         )
 
+        if not self.o3d_pcd.has_points():
+            return
+
         # Voxel downsampling uses a regular voxel grid to create
         # a uniformly downsampled point cloud from an input point cloud.
         self.o3d_pcd = self.o3d_pcd.voxel_down_sample(voxel_size=voxel_size)

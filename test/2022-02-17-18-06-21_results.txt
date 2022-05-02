@@ -1,0 +1,1657 @@
+1:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+2:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+3:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 13
+Cars: 0
+
+
+4:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 6
+Cars: 0
+
+
+5:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+6:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 13
+Cars: 0
+
+
+7:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+8:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 1
+
+
+9:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+10:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 6
+Cars: 0
+
+
+11:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 12
+Cars: 0
+
+
+12:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+13:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+14:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 13
+Cars: 1
+
+
+15:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+16:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+17:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+18:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 1
+
+
+19:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 12
+Cars: 0
+
+
+20:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 6
+Cars: 2
+
+
+21:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 12
+Cars: 1
+
+
+22:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+23:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 1
+
+
+24:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+25:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 6
+Cars: 2
+
+
+26:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 10
+Cars: 1
+
+
+27:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+28:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+29:
+Humans: 2
+Traffic Lights: 0
+Street Signs: 13
+Cars: 1
+
+
+30:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+31:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+32:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 1
+
+
+33:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+34:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 6
+Cars: 2
+
+
+35:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+36:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 2
+
+
+37:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 12
+Cars: 0
+
+
+38:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 1
+
+
+39:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+40:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+41:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+42:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 12
+Cars: 0
+
+
+43:
+Humans: 1
+Traffic Lights: 1
+Street Signs: 6
+Cars: 1
+
+
+44:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 4
+Cars: 0
+
+
+45:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+46:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+47:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+48:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 12
+Cars: 0
+
+
+49:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+50:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+51:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+52:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+53:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+54:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 12
+Cars: 0
+
+
+55:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 8
+Cars: 2
+
+
+56:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+57:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+58:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 1
+
+
+59:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+60:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 5
+Cars: 2
+
+
+61:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+62:
+Humans: 2
+Traffic Lights: 0
+Street Signs: 6
+Cars: 0
+
+
+63:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+64:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+65:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 1
+
+
+66:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+67:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 12
+Cars: 1
+
+
+68:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+69:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 1
+
+
+70:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+71:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 6
+Cars: 1
+
+
+72:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 13
+Cars: 1
+
+
+73:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+74:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+75:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+76:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 6
+Cars: 1
+
+
+77:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 2
+
+
+78:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 1
+
+
+79:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+80:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 6
+Cars: 0
+
+
+81:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 12
+Cars: 0
+
+
+82:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 2
+
+
+83:
+Humans: 2
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+84:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 2
+
+
+85:
+Humans: 0
+Traffic Lights: 1
+Street Signs: 10
+Cars: 0
+
+
+86:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 16
+Cars: 0
+
+
+87:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 2
+
+
+88:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 6
+Cars: 1
+
+
+89:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 6
+Cars: 0
+
+
+90:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+91:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 11
+Cars: 0
+
+
+92:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+93:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 6
+Cars: 1
+
+
+94:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 12
+Cars: 0
+
+
+95:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+96:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+97:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+98:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+99:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 12
+Cars: 0
+
+
+100:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+101:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+102:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 6
+Cars: 2
+
+
+103:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+104:
+Humans: 2
+Traffic Lights: 0
+Street Signs: 11
+Cars: 1
+
+
+105:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+106:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+107:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 1
+
+
+108:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+109:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 11
+Cars: 1
+
+
+110:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+111:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 8
+Cars: 1
+
+
+112:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 9
+Cars: 2
+
+
+113:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 11
+Cars: 0
+
+
+114:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 12
+Cars: 0
+
+
+115:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+116:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+117:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+118:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 11
+Cars: 0
+
+
+119:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 6
+Cars: 0
+
+
+120:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 11
+Cars: 0
+
+
+121:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 2
+
+
+122:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+123:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+124:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+125:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 6
+Cars: 0
+
+
+126:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 12
+Cars: 0
+
+
+127:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 4
+Cars: 1
+
+
+128:
+Humans: 2
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+129:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 11
+Cars: 0
+
+
+130:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 5
+Cars: 1
+
+
+131:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+132:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 2
+
+
+133:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 1
+
+
+134:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+135:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 6
+Cars: 0
+
+
+136:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+137:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 6
+Cars: 1
+
+
+138:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 11
+Cars: 0
+
+
+139:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 1
+
+
+140:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+141:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 11
+Cars: 0
+
+
+142:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+143:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+144:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+145:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 1
+
+
+146:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 4
+Cars: 1
+
+
+147:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 1
+
+
+148:
+Humans: 2
+Traffic Lights: 0
+Street Signs: 5
+Cars: 1
+
+
+149:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+150:
+Humans: 2
+Traffic Lights: 0
+Street Signs: 6
+Cars: 2
+
+
+151:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 11
+Cars: 0
+
+
+152:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 9
+Cars: 1
+
+
+153:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+154:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 2
+
+
+155:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+156:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 2
+
+
+157:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 4
+Cars: 1
+
+
+158:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 2
+
+
+159:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 2
+
+
+160:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+161:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+162:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 2
+
+
+163:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+164:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 1
+
+
+165:
+Humans: 2
+Traffic Lights: 0
+Street Signs: 6
+Cars: 1
+
+
+166:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 12
+Cars: 1
+
+
+167:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+168:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+169:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 11
+Cars: 1
+
+
+170:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 6
+Cars: 2
+
+
+171:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 12
+Cars: 0
+
+
+172:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 6
+Cars: 2
+
+
+173:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+174:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 15
+Cars: 1
+
+
+175:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 1
+
+
+176:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+177:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+178:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+179:
+Humans: 2
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+180:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+181:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 2
+
+
+182:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 6
+Cars: 2
+
+
+183:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+184:
+Humans: 2
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+185:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 6
+Cars: 1
+
+
+186:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+187:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 8
+Cars: 1
+
+
+188:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 10
+Cars: 0
+
+
+189:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+190:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+191:
+Humans: 0
+Traffic Lights: 1
+Street Signs: 7
+Cars: 0
+
+
+192:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 7
+Cars: 1
+
+
+193:
+Humans: 2
+Traffic Lights: 0
+Street Signs: 8
+Cars: 1
+
+
+194:
+Humans: 1
+Traffic Lights: 1
+Street Signs: 6
+Cars: 0
+
+
+195:
+Humans: 2
+Traffic Lights: 0
+Street Signs: 11
+Cars: 0
+
+
+196:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 11
+Cars: 1
+
+
+197:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 8
+Cars: 0
+
+
+198:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+199:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 9
+Cars: 0
+
+
+200:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+201:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 1
+
+
+202:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 7
+Cars: 0
+
+
+203:
+Humans: 1
+Traffic Lights: 0
+Street Signs: 6
+Cars: 0
+
+
+204:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+205:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+206:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+207:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+208:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+209:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+210:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+211:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+212:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+213:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+214:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+215:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+216:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+217:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+218:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+219:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+220:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+221:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+222:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+223:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+224:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+225:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+226:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+227:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+228:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+229:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+230:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+231:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+232:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+233:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+234:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+235:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+236:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
+
+
+237:
+Humans: 0
+Traffic Lights: 0
+Street Signs: 5
+Cars: 0
