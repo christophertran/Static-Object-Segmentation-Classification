@@ -80,7 +80,7 @@ def basic_validate(_ground_truth, _results):
         result = result.strip().split(":")
 
         if len(truth) > 1 and truth[-1] and len(result) > 1 and result[-1]:
-            counter.update([truth == result])background_color
+            counter.update([truth == result])
 
     print("Total Predictions Correctness")
     total = 0
